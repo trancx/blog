@@ -1,9 +1,9 @@
-{
+
+
 	"plugins": ["layout"],
      	"pluginsConfig": {
-        "layout": {
-        	"footerPath" : "layouts/footer.html"
-        }
-    },
+        	"layout": {
+        		"footerPath" : "layouts/footer.html"
+       		 }
+ 	},
 
-}
