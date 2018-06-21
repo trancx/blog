@@ -1,6 +1,6 @@
 
 {
-    "plugins": ["page-copyright"],
+    "plugins": ["page-copyright"] ,
     "pluginsConfig" : {
         "page-copyright": {
           "description": "modified at",
