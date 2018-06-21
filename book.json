@@ -4,14 +4,12 @@
 	"anchor-navigation-ex": {
         "associatedWithSummary":true
         },
-	"mode" : "float",
 	"float" : {
 	       "showLevelIcon": true,
 	       "level1Icon": "fa fa-hand-o-right",
 	       "level2Icon": "fa fa-hand-o-right",
 	       "level3Icon": "fa fa-hand-o-right"
-	    }	
-	},
+	},	
         "theme-default": {
             "showLevel": true
         }
