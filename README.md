@@ -1,5 +1,5 @@
 ---
-description: welcome the world of trance!
+description: welcome to the world of trance!
 ---
 
 # Trance
