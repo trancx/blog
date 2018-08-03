@@ -8,5 +8,10 @@ description: 写一些关于 BIOS 以及 它的替代版本 UEFI
 
 最直接的映像就是，现在在这个所谓的 BIOS，比如在某些华硕的笔记本，在 BIOS 里面，我们竟然可以用触摸屏，USB 鼠标甚至有些支持动态插拔设备，这在以前都是不可能的，具体等下我会说明原因。
 
-
+1.  what's BIOS, why BIOS
+2.  its limits
+3.  example about its boot
+4.  then, UEFI comes
+5.  like a small OS, 32/64bits store data in NVRAM for read
+6.  most BIOS are UEFI
 
