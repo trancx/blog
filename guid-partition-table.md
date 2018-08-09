@@ -16,11 +16,11 @@ GPT，[ GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table
 
 ![](.gitbook/assets/guid_partition_table_scheme.svg.png)
 
-```bash
-$ gdisk /dev/sda
- output:
-   
-```
+GPT 真正开始于第二块扇区，也就是 LBA1，同时磁盘的最后一部分还有备份，是为防止出错的情况，首先我们来关注它的组成。一个头部，然后带128个分区，也就是说我们分区可以高达128个，还是不算逻辑分区的情况，在以前MBR的时候，早期 Windows 只能有4个物理分区，也是由于 MBR 的限制，当然现在肯定不存在这个问题了。
 
-GPT 真正开始于第二块扇区，也就是 LBA1，同时磁盘的最后一部分还有备份，
+![](.gitbook/assets/tu-pian%20%285%29.png)
+
+上图是头部记录的一些关键信息，左-右 分别代表的是偏移量，长度和解释。
+
+
 
