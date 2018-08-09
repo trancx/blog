@@ -14,7 +14,13 @@ GPT，[ GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table
 
 了解了 LBA 之后，我们现在可以说，在 GPT 中，LBA0 是受保护的，这句话就可以被理解了，就是第一块扇区，也就是说 MBR 是受保护的，是不使用的，因为 UEFI 中支持 MBR 引导，这是为了向后兼容，所以干脆 GPT 不使用这一块区域。
 
-![](.gitbook/assets/tu-pian%20%283%29.png)
+![](.gitbook/assets/guid_partition_table_scheme.svg.png)
 
+```bash
+$ gdisk /dev/sda
+ output:
+   
+```
 
+GPT 真正开始于第二块扇区，也就是 LBA1，同时磁盘的最后一部分还有备份，
 
