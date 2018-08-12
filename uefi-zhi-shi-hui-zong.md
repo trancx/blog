@@ -18,5 +18,9 @@
 
 [EFI 引导过程](https://jdebp.eu/FGA/efi-boot-process.html)，中间提及了几个 NVRAM 变量的作用。
 
+最后是 UEFI 编程方面的
 
+[OSDev UEFI](https://wiki.osdev.org/UEFI)  OSDev 是一个好地方，对操作系统开发有兴趣的朋友可以去了解一下。
+
+UEFI 原理与编程，戴正华，有人说为什么资料都是外国的，国内的基本没有但是这一本讲 UEFI 编程却是很不错的一本书，但是注重的是编程。如果有人感兴趣，可以看看。
 
