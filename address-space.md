@@ -18,9 +18,9 @@
 0x100000    a
 0x100004    b
 
-0x100    movl %eax, [0x100000]
-         movl %ebx, [0x100004]
-         addl %ebx, %eax     # a =  a + b
+0x100    movl 0x100000,  %eax
+         movl 0x100004,  %ebx
+         addl %ebx,  %eax     # a =  a + b
 
 程序偏移 0x100 的地方有一条指令，实现了 a,b 的相加        
 ```
