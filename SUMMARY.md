@@ -1,7 +1,7 @@
 # Table of contents
 
 * [Trance](README.md)
-* [open 设备文件全过程](open-she-bei-wen-jian-quan-guo-cheng.md)
+* [open 设备文件全过程](tricks_on_the_device_file.md)
 * [地址空间](address-space.md)
 * [什么是 UEFI 以及它和 BIOS 的区别](uefi-and-bios.md)
 * [UEFI 的引导过程](uefi-boot-process.md)
