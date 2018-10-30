@@ -80,19 +80,42 @@ struct super_operations {
 
 当然，赋值给 _alloc\_inode_  函数指针的函数最关键的一步，就是在创建 inode 的时候，将 i\_fop 设置为自己编写的函数，这样是不是全部能联系在一起了。这里关键思想就是，_“写函数，然后把函数的地址给内核，接着内核调用”。_ 
 
-总结一下，假设我们的 /dev/ 是属于 ext2 文件系统，那么我们 open\(\)，然后经过路径搜索，找到了 /dev/sda 的 inode，它的字段 i\_fops，决定了open 的具体操作， 而 i\_fops 是文件系统编写者写，然后注册到内核当中，当我们新建一个inode的时候就会被赋值，也就是创建一个新文件的时候，那个 inode 就会被创建，接着赋值。这里其实涉及了文件系统的编写了，总之我们得留下一个映像，**内核不知道文件怎么打开，它只是调用文件系统提供的功能，这就是 VFS 的实质**。
+总结一下，以打开 "/dev/sda" 为例子，那么 open\(\)，然后经过路径搜索，找到了 /dev/sda 的 inode，它的字段 i\_fops，决定了open 的具体操作， 而 i\_fops 是文件系统编写者写，然后注册到内核当中，当我们新建一个inode的时候就会被赋值，也就是创建一个新文件的时候，那个 inode 就会被创建，接着赋值。这里其实涉及了文件系统的编写了，总之我们得留下一个映像，**内核不知道文件怎么打开，它只是调用文件系统提供的功能，这就是 VFS 的实质**。
 
-也就是说， open 函数，其实就是调用了驱动编写者提供的 open 函数？那么问题来了，这里是文件系统提供的函数对把，那么块设备文件可指不定创建在哪个文件系统上，而且软盘，硬盘，cd 都是块设备，一个文件系统驱动又怎么可能自带块设备节点的处理呢？ 所以这些功能，是不是应该由块设备的编写者来提供呢？ 那么一个文件系统又怎么帮助一个设备文件找到属于它的真正的 file\_operations ，那就看看一个设备文件到底怎么被创建的把。
+也就是说， open 函数，其实就是调用了驱动编写者提供的 open 函数？那么问题来了，这里是文件系统提供的函数对把，那么块设备文件可指不定创建在哪个文件系统上\( 可能 ext2 xfs ext4 minix ...\)，而且软盘，硬盘，cd 都是块设备，一个文件系统驱动又怎么可能自带块设备节点的处理呢？ 所以这些功能，是不是应该由块设备的编写者来提供呢？ 那么一个文件系统又怎么帮助一个设备文件找到真正属于它的 _**file\_operations**_ ，那就看看一个设备文件到底怎么被创建的把。
 
 ## 从设备文件被创建开始
 
-这篇博客一直都建立在一个前提上，就是读者对于 VFS 有一些基础的认识，比如 open\(\) 这一系统调用，file 结构，然后最终因为它们 inode 的 f\_ops 指针不一样，所以导致执行的操作不一样等等，我们重点关注的是这些指针是如何被赋值到 file 结构上的，以及为什么根据设备名能最终找到不同的设备，这些 tricks 是真正的重点。
+这篇博客一直都建立在一个前提上，就是读者对于 VFS 有一些基础的认识，比如 open\(\) 这一系统调用，_**file**_ 结构，然后最终因为它们 inode 的 f\_ops 指针不一样，所以导致执行的操作不一样等等，我们重点关注的是这些指针是如何被赋值到 file 结构上的，以及为什么根据设备名能最终找到不同的设备，这些 tricks 是真正的重点。
 
 冤有头，债有主。想知道设备文件读写的全过程，我们必须得知道这个文件是**如何被创建的**。这里先提一点，可能新手对于设备能被抽象为文件很是不解，我当初也是如此，但是你得知道所谓文件，就是你的读写最终是和磁盘沟通，所以可不可以理解成我们之前理解的文件，其实就是硬盘的存储空间呢？所以是不是也是设备文件，所以啊，其实所有的文件都可以理解为设备文件（先不考虑管道这些通信文件），随着学习的深入，我们会发现其实文件充当的作用只有一个，那就是作为一个**沟通的媒介**。
 
+那么设备文件到底怎么创建呢。Linux 终端下我们可以 _**mkdir touch mknod ln**_ 等等指令，其实归根到底都是 _**inode\_operations**_ 提供的。
 
+```c
+struct inode_operations {
+	...
+	int (*create) (struct inode *,struct dentry *,int, struct nameidata *);
+	struct dentry * (*lookup) (struct inode *,struct dentry *, struct nameidata *);
+	int (*link) (struct dentry *,struct inode *,struct dentry *);
+	int (*unlink) (struct inode *,struct dentry *);
+	int (*symlink) (struct inode *,struct dentry *,const char *);
+	int (*mkdir) (struct inode *,struct dentry *,int);
+	int (*rmdir) (struct inode *,struct dentry *);
+	int (*mknod) (struct inode *,struct dentry *,int,dev_t);
+	int (*rename) (struct inode *, struct dentry *,
+			struct inode *, struct dentry *);
+	...
+};
+```
 
+设备文件就是调用 mknod 创建，跟之前 open 类比，我们知道其实也是文件系统提供的函数，看看这个函数的参数，其中 dev\_t 就是设备号，这里不详细介绍，我们在查看设备文件有一字段就是设备号，是在 mknod 的时候指定的。
 
+```text
+[trance@centos ~]$ ls -l /dev/sda
+brw-rw----. 1 root disk 8, 0 Oct 30 17:25 /dev/sda
 
+```
 
+以 ext2 文件系统为例子，我们来看看它的 _mknod_ 的函数，关键得知道，究竟文件系统给设备文件的 inode 的 i\_fops 施加了什么魔法，首先我们得确定一点，就是的确是 ext2 文件系统给 inode 赋值了文件操作的函数，因为用户在/dev 目录下 调用的 mknod 必然就是由这个文件系统来指定操作。
 
