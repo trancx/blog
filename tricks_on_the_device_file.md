@@ -1,4 +1,4 @@
-# open 设备文件全过程
+# open 设备文件全过程（以块设备为例）
 
 ## Preface
 
@@ -118,4 +118,65 @@ brw-rw----. 1 root disk 8, 0 Oct 30 17:25 /dev/sda
 ```
 
 以 ext2 文件系统为例子，我们来看看它的 _mknod_ 的函数，关键得知道，究竟文件系统给设备文件的 inode 的 i\_fops 施加了什么魔法，首先我们得确定一点，就是的确是 ext2 文件系统给 inode 赋值了文件操作的函数，因为用户在/dev 目录下 调用的 mknod 必然就是由这个文件系统来指定操作。
+
+_mknod_  创建的一类特殊的设备文件，因为一块设备当然是没有大小的说法，但是却有设备号，所以在 Linux 下的文件系统驱动必然就应该提供这个接口，我们来看看ext2 文件系统的相关函数。
+
+```c
+static int ext2_mknod (struct inode * dir, struct dentry *dentry, int mode, dev_t rdev)
+{
+	struct inode * inode;
+	int err;
+
+	if (!new_valid_dev(rdev))
+		return -EINVAL;
+	dquot_initialize(dir);
+	inode = ext2_new_inode (dir, mode, &dentry->d_name);
+// 这里分配一个新的 inode ， 我们不用关心
+	err = PTR_ERR(inode);
+	if (!IS_ERR(inode)) {
+		init_special_inode(inode, inode->i_mode, rdev);
+// 这句是核心，对特殊的 inode 做初始化，即设备文件的inode
+#ifdef CONFIG_EXT2_FS_XATTR
+		inode->i_op = &ext2_special_inode_operations;
+#endif
+		mark_inode_dirty(inode);
+		err = ext2_add_nondir(dentry, inode);
+	}
+	return err;
+}
+
+```
+
+读者类比 open 便可以猜想到内核是怎么来到 _**ext2\_mknod**_，我们关心的是 _**init\_special\_inode**_ 这个函数，因为传入了设备号，很显然 trick 一定是在这了。_**init\_special\_inode**_ 是 Linux 内核提供的函数，思考一下为什么是这样，因为 mknod 必须得创建 inode，而不同的文件系统创建的 inode 不一样\(  因为需要在硬盘相关位置读写 \)，所以需要文件系统提供 mknod 接口，创建了 inode 之后，文件系统又如何知道这个内核版本的设备文件如何处理呢？所以就使用了**内核**提供的接口，分工明确，各司其职。
+
+下面来揭开这个 _**init\_special\_inode**_ 的神秘面纱
+
+```c
+void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
+{
+	inode->i_mode = mode;
+	if (S_ISCHR(mode)) {
+		inode->i_fop = &def_chr_fops;
+		inode->i_rdev = rdev;
+	} else if (S_ISBLK(mode)) {
+		inode->i_fop = &def_blk_fops;
+		inode->i_rdev = rdev;
+	} else if (S_ISFIFO(mode))
+		inode->i_fop = &def_fifo_fops;
+	else if (S_ISSOCK(mode))
+		inode->i_fop = &bad_sock_fops;
+	else
+		printk(KERN_DEBUG "init_special_inode: bogus i_mode (%o) for"
+				  " inode %s:%lu\n", mode, inode->i_sb->s_id,
+				  inode->i_ino);
+}
+```
+
+读者肯定也不惊讶，最终是内核设置了 inode 的文件操作函数，以块设备为例，**块设备文件创建之后，文件系统完成了 inode 的创建，而内核则是负责赋值了它的操作函数**。这就是 magic 所在拉。
+
+keke，到了敲黑板时间。总结一下，首先 mknod 这一命令最终来到了文件系统提供的接口，文件系统创建了 inode，接着对它的初始化交给了内核，于是乎，内核给它的 inode-&gt;i\_fop 赋值，这便是我们上一节所提及的关键。 
+
+## 设备文件的面纱
+
+
 
