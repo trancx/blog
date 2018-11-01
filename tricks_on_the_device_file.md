@@ -152,6 +152,7 @@ static int ext2_mknod (struct inode * dir, struct dentry *dentry, int mode, dev_
 下面来揭开这个 _**init\_special\_inode**_ 的神秘面纱
 
 ```c
+// fs/inode.c:1703:2.6.39.4
 void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
 {
 	inode->i_mode = mode;
@@ -177,6 +178,66 @@ void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
 keke，到了敲黑板时间。总结一下，首先 mknod 这一命令最终来到了文件系统提供的接口，文件系统创建了 inode，接着对它的初始化交给了内核，于是乎，内核给它的 inode-&gt;i\_fop 赋值，这便是我们上一节所提及的关键。 
 
 ## 设备文件的面纱
+
+下面的关键就是， _**init\_special\_inode**_  所设置的文件操作函数拉。还是以块设备为例子。
+
+```c
+// fs/block_dev.c:1592:2.6.39.4
+
+const struct file_operations def_blk_fops = {
+	.open		= blkdev_open,
+	.release	= blkdev_close,
+	.llseek		= block_llseek,
+	.read		= do_sync_read,
+	.write		= do_sync_write,
+  	.aio_read	= generic_file_aio_read,
+	.aio_write	= blkdev_aio_write,
+	.mmap		= generic_file_mmap,
+	.fsync		= blkdev_fsync,
+	.unlocked_ioctl	= block_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= compat_blkdev_ioctl,
+#endif
+	.splice_read	= generic_file_splice_read,
+	.splice_write	= generic_file_splice_write,
+};
+```
+
+当然，我们只需要关注 open 函数，其它都是类似的，读者有兴趣应该自己了解，我们关注的是它的tricks，它的实现思想。
+
+```c
+// fs/block_dev.c, line 1402， v2.6.39.4
+
+static int blkdev_open(struct inode * inode, struct file * filp)
+{
+	struct block_device *bdev;
+
+	/*
+	 * Preserve backwards compatibility and allow large file access
+	 * even if userspace doesn't ask for it explicitly. Some mkfs
+	 * binary needs it. We might want to drop this workaround
+	 * during an unstable branch.
+	 */
+	filp->f_flags |= O_LARGEFILE;
+
+	if (filp->f_flags & O_NDELAY)
+		filp->f_mode |= FMODE_NDELAY;
+	if (filp->f_flags & O_EXCL)
+		filp->f_mode |= FMODE_EXCL;
+	if ((filp->f_flags & O_ACCMODE) == 3)
+		filp->f_mode |= FMODE_WRITE_IOCTL;
+
+	bdev = bd_acquire(inode);
+	if (bdev == NULL)
+		return -ENOMEM;
+
+	filp->f_mapping = bdev->bd_inode->i_mapping;
+
+	return blkdev_get(bdev, filp->f_mode, filp);
+}
+```
+
+需要提醒的一点是，此时的操作都是由内核块设备模块开发那一部分的人提供的，文件系统没有需求，没有必要管这一部分，它只需要提供 _**mknod**_ 接口函数，负责自己的 inode 创建，接着调用内核提供的接口 _**init\_special\_inode**_ 就OK，不同的文件系统在这部分处理都应该是相似的，因为设备结构是其它模块的事情，文件系统只需要调用接口。
 
 
 
