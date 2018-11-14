@@ -239,6 +239,86 @@ static int blkdev_open(struct inode * inode, struct file * filp)
 
 需要提醒的一点是，此时的操作都是由内核块设备模块开发那一部分的人提供的，文件系统没有需求，没有必要管这一部分，它只需要提供 _**mknod**_ 接口函数，负责自己的 inode 创建，接着调用内核提供的接口 _**init\_special\_inode**_ 就OK，不同的文件系统在这部分处理都应该是相似的，因为设备结构是其它模块的事情，文件系统只需要调用接口。
 
+如果有非常细心的读者，会发现，上述过程是在设备文件创建的时候才赋值，那么我们关机之后，创建的设备文件节点实际上还在文件系统中，那我们利用的实质其实就变成了文件系统的 open 函数，其实，不难想到的一点，在文件系统打开的函数的时候，必然要实现的一步，就是对 inode-&gt;i\_fops 的赋值，只要检测它是否属于设备节点，如果是，就赋值为 _**init\_special\_inode**_，又回到了上面这一过程。
+
+```c
+// /fs/ext2/inode.c:1291
+struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
+{
+	struct ext2_inode_info *ei;
+	struct buffer_head * bh;
+	struct ext2_inode *raw_inode;
+	struct inode *inode;
+	long ret = -EIO;
+	int n;
+
+	inode = iget_locked(sb, ino);
+	if (!inode)
+		return ERR_PTR(-ENOMEM);
+	if (!(inode->i_state & I_NEW))
+		return inode;
+
+	ei = EXT2_I(inode);
+	ei->i_block_alloc_info = NULL;
+
+	raw_inode = ext2_get_inode(inode->i_sb, ino, &bh);
+	if (IS_ERR(raw_inode)) {
+		ret = PTR_ERR(raw_inode);
+ 		goto bad_inode;
+	}
+	.....
+	.....
+	if (S_ISREG(inode->i_mode)) {
+		inode->i_op = &ext2_file_inode_operations;
+		if (ext2_use_xip(inode->i_sb)) {
+			inode->i_mapping->a_ops = &ext2_aops_xip;
+			inode->i_fop = &ext2_xip_file_operations;
+		} else if (test_opt(inode->i_sb, NOBH)) {
+			inode->i_mapping->a_ops = &ext2_nobh_aops;
+			inode->i_fop = &ext2_file_operations;
+		} else {
+			inode->i_mapping->a_ops = &ext2_aops;
+			inode->i_fop = &ext2_file_operations;
+		}
+	} else if (S_ISDIR(inode->i_mode)) {
+		inode->i_op = &ext2_dir_inode_operations;
+		inode->i_fop = &ext2_dir_operations;
+		if (test_opt(inode->i_sb, NOBH))
+			inode->i_mapping->a_ops = &ext2_nobh_aops;
+		else
+			inode->i_mapping->a_ops = &ext2_aops;
+	} else if (S_ISLNK(inode->i_mode)) {
+		if (ext2_inode_is_fast_symlink(inode)) {
+			inode->i_op = &ext2_fast_symlink_inode_operations;
+			nd_terminate_link(ei->i_data, inode->i_size,
+				sizeof(ei->i_data) - 1);
+		} else {
+			inode->i_op = &ext2_symlink_inode_operations;
+			if (test_opt(inode->i_sb, NOBH))
+				inode->i_mapping->a_ops = &ext2_nobh_aops;
+			else
+				inode->i_mapping->a_ops = &ext2_aops;
+		}
+	} else {
+		inode->i_op = &ext2_special_inode_operations;
+		if (raw_inode->i_block[0])
+			init_special_inode(inode, inode->i_mode,
+			   old_decode_dev(le32_to_cpu(raw_inode->i_block[0])));
+		else 
+			init_special_inode(inode, inode->i_mode,
+			   new_decode_dev(le32_to_cpu(raw_inode->i_block[1])));
+	}
+	brelse (bh);
+	ext2_set_inode_flags(inode);
+	unlock_new_inode(inode);
+	return inode;
+	
+bad_inode:
+	iget_failed(inode);
+	return ERR_PTR(ret);
+}
+```
+
 这篇文章到这里就快结束了，上面的代码最关键的函数就是  22行，涉及了具体的块设备相关函数，这篇文章的强调的是以下几点。
 
 * 文件是这是一个沟通的媒介，用户打开文件，内核实际上做的事情很简单，就是从文件对应的 inode 那里拿到处理函数（ file\_operations ）, 接着初始化。
