@@ -9,5 +9,4 @@
 * [UEFI 的引导过程](uefi-boot-process.md)
 * [GUID 分区表](guid-partition-table.md)
 * [UEFI 知识汇总](uefi-summary.md)
-* [CentOS User Tutorial](https://trance.gitbook.io/centos-guide/)
 
