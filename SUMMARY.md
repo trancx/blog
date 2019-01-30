@@ -1,7 +1,7 @@
 # Table of contents
 
 * [Trance](README.md)
-* [最近在玩WinIo遇到的问题](zui-jin-zai-wan-winio-yu-dao-de-wen-ti.md)
+* [最近在玩WinIo遇到的问题](howto-winio.md)
 * [open 设备文件全过程（以块设备为例）](tricks_on_the_device_file.md)
 * [块设备文件](internal_of_block_device.md)
 * [地址空间](address-space.md)
