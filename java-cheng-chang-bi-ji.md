@@ -48,7 +48,7 @@ C 可以说是老手啦，但是java用的其实不多，但是非常适合偷�
         System.out.println(tmpStream.toString());
 ```
 
-## 获取系统属性和环境变量
+### 获取系统属性和环境变量
 
 ```java
         Map<String, String> map = System.getenv();
@@ -60,5 +60,55 @@ C 可以说是老手啦，但是java用的其实不多，但是非常适合偷�
         String tmpdir = System.getProperty("java.io.tmpdir");
         
         更多请看手册哦~
+```
+
+### 动态库的问题
+
+```java
+System.loadLibrary() 加载的动态库必须在 Path环境变量的路径下 
+String libdir = System.getProperty("java.library.path");
+System.load() 可以解决这个问题，但是得给出绝对路径
+
+最后是 dll 的生成必须符合 JNI 规范，自己找资料0.0
+编译dll得使用java提供的特定头文件
+
+但是JNA很好的解决了这个问题，但是JNA的问题是
+JNA加载DLL的路径会改变，因为它绕过了JVM
+和JVM是同等地位，看WINIO那篇文章可以知道
+```
+
+### 获取jar包的文件
+
+```java
+jar包内所有的文件都属于class，需要采用非正常方法加载，参考的是 Jinteltype的源码
+  void fromJarToFs(String jarPath, String filePath) throws IOException {
+      InputStream is = null;
+      OutputStream os = null;
+      try {
+         File file = new File(filePath);
+         if (file.exists()) {
+            boolean success = file.delete();
+            if (!success) {
+               throw new IOException("Could not delete file: " + filePath);
+            }
+         }
+
+         is = ClassLoader.getSystemClassLoader().getResourceAsStream(jarPath);
+         os = new FileOutputStream(filePath);
+         byte[] buffer = new byte[8192];
+         int bytesRead;
+         while ((bytesRead = is.read(buffer)) != -1) {
+            os.write(buffer, 0, bytesRead);
+         }
+      } catch (Exception ex) {
+         throw new IOException("FromJarToFileSystem failed " + jarPath, ex);
+      } finally {
+         if (is != null) {
+            is.close();
+         }
+         if (os != null) {
+            os.close();
+         }
+      }
 ```
 
