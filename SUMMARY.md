@@ -2,6 +2,7 @@
 
 * [Trance](README.md)
 * [安卓系统入门](android.md)
+* [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [java 成长笔记](java-cheng-chang-bi-ji.md)
 * [最近在玩WinIo遇到的问题](howto-winio.md)
 * [open 设备文件全过程（以块设备为例）](tricks_on_the_device_file.md)
