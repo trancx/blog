@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Trance](README.md)
+* [Linux input 子系统](linux-input-subsytem.md)
 * [安卓系统入门](android.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [java 成长笔记](java-cheng-chang-bi-ji.md)
