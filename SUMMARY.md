@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Trance](README.md)
+* [X86 ARM 下的函数调用规则](x86-arm-call-convention.md)
 * [Linux input 子系统](linux-input-subsytem.md)
 * [安卓系统入门](android.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
