@@ -152,7 +152,7 @@ public class Test {
 
 注意 dll的名字为 testdll.dll， 然后放在 src 目录下，即和 package 目录同级
 
-![](.gitbook/assets/tu-pian%20%2814%29.png)
+![](.gitbook/assets/tu-pian%20%2815%29.png)
 
 得到输出：
 
@@ -196,7 +196,7 @@ public interface WinIo extends Library {
 	}
 ```
 
-![](.gitbook/assets/tu-pian%20%288%29.png)
+![](.gitbook/assets/tu-pian%20%289%29.png)
 
 上面可以看见，存在了一个 winio64 的驱动，路径也就是 java之下，在我们没有调用 ShutdownWinIo 或者关机之前，驱动都会存在于内存中，如果我们把驱动的源文件移除，然后调用函数，仍然可以成功，因为驱动没有被卸载。
 
@@ -210,11 +210,11 @@ public interface WinIo extends Library {
 
 修改代码，移除驱动。
 
-![](.gitbook/assets/tu-pian%20%2813%29.png)
+![](.gitbook/assets/tu-pian%20%2814%29.png)
 
 已经找不到了驱动了，如果此时我们把驱动文件移除，或者更换名字，初始化就会失败。
 
-![](.gitbook/assets/tu-pian%20%2812%29.png)
+![](.gitbook/assets/tu-pian%20%2813%29.png)
 
 修改相关代码
 
@@ -250,15 +250,15 @@ LPSTR和LPWSTR是Win32和VC++所使用的一种字符串数据类型。LPSTR被�
 
 
 
-![](.gitbook/assets/tu-pian%20%284%29.png)
+![](.gitbook/assets/tu-pian%20%285%29.png)
 
 
 
 ![](.gitbook/assets/tu-pian.png)
 
-![](.gitbook/assets/tu-pian%20%2811%29.png)
+![](.gitbook/assets/tu-pian%20%2812%29.png)
 
-![](.gitbook/assets/tu-pian%20%2815%29.png)
+![](.gitbook/assets/tu-pian%20%2816%29.png)
 
 有意思的是，64位并不需要这些函数，即使注释掉也没有任何问题。还有就是 Mingw 和 MSVC 在动态库的规范问题，这里不列出了。
 

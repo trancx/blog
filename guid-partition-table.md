@@ -10,7 +10,7 @@ GPT，[ GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table
 前面七位就可以编址 0~127 个块，所以我们说它有优势，而且不需要考虑 CHS 的位数分配
 ```
 
-![](.gitbook/assets/tu-pian%20%281%29.png)
+![](.gitbook/assets/tu-pian%20%282%29.png)
 
 了解了 LBA 之后，我们现在可以说，在 GPT 中，LBA0 是受保护的，这句话就可以被理解了，就是第一块扇区，也就是说 MBR 是受保护的，是不使用的，因为 UEFI 中支持 MBR 引导，这是为了向后兼容，所以干脆 GPT 不使用这一块区域。
 

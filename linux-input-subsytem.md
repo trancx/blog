@@ -335,7 +335,7 @@ int input_register_handle(struct input_handle *handle)
 
 注释很清楚啦， input\_handle 就是连接 handler 和 input device 一个媒介，这里就是添加其到相应的设备链表上。
 
-![&#x5BF9;&#x5E94;&#x5173;&#x7CFB;&#xFF0C;&#x6765;&#x6E90;&#x7F51;&#x7EDC;](.gitbook/assets/tu-pian%20%282%29.png)
+![&#x5BF9;&#x5E94;&#x5173;&#x7CFB;&#xFF0C;&#x6765;&#x6E90;&#x7F51;&#x7EDC;](.gitbook/assets/tu-pian%20%283%29.png)
 
 换言之，只要是输入设备，一定会与 evdev 的驱动匹配，从而创建一个 evdev设备（名字 event%d（0~31）），其父设备就是 Input device，然后 evdev 的 minor 是计算出来的，只要数组里的元素没有赋值，那就是可用的
 
