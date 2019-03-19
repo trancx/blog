@@ -1,9 +1,9 @@
 # Table of contents
 
 * [Trance](README.md)
+* [安卓系统入门](android.md)
 * [X86 ARM 下的函数调用规则](x86-arm-call-convention.md)
 * [Linux input 子系统](linux-input-subsytem.md)
-* [安卓系统入门](android.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [java 成长笔记](java-cheng-chang-bi-ji.md)
 * [最近在玩WinIo遇到的问题](howto-winio.md)
