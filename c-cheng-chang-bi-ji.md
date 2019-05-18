@@ -91,3 +91,63 @@ int main() {
 
 ```
 
+## Include trick
+
+Good example~~~
+
+```c
+/* Generate an array of cgroup subsystem pointers */
+#define SUBSYS(_x) &_x ## _subsys,
+static struct cgroup_subsys *subsys[] = {
+#include <linux/cgroup_subsys.h>
+};
+
+#define SUBSYS(_x) extern struct cgroup_subsys _x ## _subsys;
+#include <linux/cgroup_subsys.h>
+#undef SUBSYS
+
+/* Define the enumeration of all cgroup subsystems */
+#define SUBSYS(_x) _x ## _subsys_id,
+enum cgroup_subsys_id {
+#include <linux/cgroup_subsys.h>
+	CGROUP_SUBSYS_COUNT
+};
+#undef SUBSYS
+
+
+```
+
+{% code-tabs %}
+{% code-tabs-item title="linux/cgroup\_subsys.h" %}
+```c
+#ifdef CONFIG_CPUSETS
+SUBSYS(cpuset)
+#endif
+
+/* */
+
+#ifdef CONFIG_CGROUP_DEBUG
+SUBSYS(debug)
+#endif
+
+/* */
+
+#ifdef CONFIG_CGROUP_NS
+SUBSYS(ns)
+#endif
+
+/* */
+
+#ifdef CONFIG_FAIR_CGROUP_SCHED
+SUBSYS(cpu_cgroup)
+#endif
+
+/* */
+
+#ifdef CONFIG_CGROUP_CPUACCT
+SUBSYS(cpuacct)
+#endif
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
