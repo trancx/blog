@@ -22,10 +22,10 @@ open("/dev/sda" ...);  //这里省略了参数，一般是 READ_ONLY
 
 ```c
 struct inode {
-	...
-	const struct inode_operations	*i_op;
-	const struct file_operations	*i_fop;	/* former ->i_op->default_file_ops */
-	...
+    ...
+    const struct inode_operations    *i_op;
+    const struct file_operations    *i_fop;    /* former ->i_op->default_file_ops */
+    ...
 };
 /* 
 inode 结构其实真正决定了一个文件到底是怎么操作的，它提供的 i_fop 
@@ -36,29 +36,29 @@ inode 结构其实真正决定了一个文件到底是怎么操作的，它提�
 
 // 对于目录 还有 readdir 功能 总之 目录也是一个文件
 struct file_operations {
-	...
-	ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
-	ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
-	int (*readdir) (struct file *, void *, filldir_t);
-	int (*open) (struct inode *, struct file *);
-	int (*flush) (struct file *, fl_owner_t id);
-	...
+    ...
+    ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+    ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *);
+    int (*readdir) (struct file *, void *, filldir_t);
+    int (*open) (struct inode *, struct file *);
+    int (*flush) (struct file *, fl_owner_t id);
+    ...
 };
 
 // 
 struct inode_operations {
-	...
-	int (*create) (struct inode *,struct dentry *,int, struct nameidata *);
-	struct dentry * (*lookup) (struct inode *,struct dentry *, struct nameidata *);
-	int (*link) (struct dentry *,struct inode *,struct dentry *);
-	int (*unlink) (struct inode *,struct dentry *);
-	int (*symlink) (struct inode *,struct dentry *,const char *);
-	int (*mkdir) (struct inode *,struct dentry *,int);
-	int (*rmdir) (struct inode *,struct dentry *);
-	int (*mknod) (struct inode *,struct dentry *,int,dev_t);
-	int (*rename) (struct inode *, struct dentry *,
-			struct inode *, struct dentry *);
-	...
+    ...
+    int (*create) (struct inode *,struct dentry *,int, struct nameidata *);
+    struct dentry * (*lookup) (struct inode *,struct dentry *, struct nameidata *);
+    int (*link) (struct dentry *,struct inode *,struct dentry *);
+    int (*unlink) (struct inode *,struct dentry *);
+    int (*symlink) (struct inode *,struct dentry *,const char *);
+    int (*mkdir) (struct inode *,struct dentry *,int);
+    int (*rmdir) (struct inode *,struct dentry *);
+    int (*mknod) (struct inode *,struct dentry *,int,dev_t);
+    int (*rename) (struct inode *, struct dentry *,
+            struct inode *, struct dentry *);
+    ...
 };
 ```
 
@@ -72,7 +72,7 @@ struct super_block {
 };
 
 struct super_operations {
-   	struct inode *(*alloc_inode)(struct super_block *sb);
+       struct inode *(*alloc_inode)(struct super_block *sb);
 };
 ```
 
@@ -84,7 +84,7 @@ struct super_operations {
 sb->sbo = &my_own_sb_ops; 
 
 struct super_operations my_own_sb_ops {
-   	alloc_inode : my_own_func
+       alloc_inode : my_own_func
 };
 
 struct inode * my_own_func (struct super_block *sb) {
@@ -92,7 +92,7 @@ struct inode * my_own_func (struct super_block *sb) {
 }
 ```
 
-当然，赋值给 _alloc\_inode_  函数指针的函数最关键的一步，就是在创建 inode 的时候，将 i\_fop 设置为自己编写的函数，这样是不是全部能联系在一起了。这里关键思想就是，_“写函数，然后把函数的地址给内核，接着内核调用”。_ 
+当然，赋值给 _alloc\_inode_ 函数指针的函数最关键的一步，就是在创建 inode 的时候，将 i\_fop 设置为自己编写的函数，这样是不是全部能联系在一起了。这里关键思想就是，_“写函数，然后把函数的地址给内核，接着内核调用”。_
 
 总结一下，以打开 "/dev/sda" 为例子，那么 open\(\)，然后经过路径搜索，找到了 /dev/sda 的 inode，它的字段 i\_fops，决定了open 的具体操作， 而 i\_fops 是文件系统编写者写，然后注册到内核当中，当我们新建一个inode的时候就会被赋值，也就是创建一个新文件的时候，那个 inode 就会被创建，接着赋值。这里其实涉及了文件系统的编写了，总之我们得留下一个映像，**内核不知道文件怎么打开，它只是调用文件系统提供的功能，这就是 VFS 的实质**。
 
@@ -108,18 +108,18 @@ struct inode * my_own_func (struct super_block *sb) {
 
 ```c
 struct inode_operations {
-	...
-	int (*create) (struct inode *,struct dentry *,int, struct nameidata *);
-	struct dentry * (*lookup) (struct inode *,struct dentry *, struct nameidata *);
-	int (*link) (struct dentry *,struct inode *,struct dentry *);
-	int (*unlink) (struct inode *,struct dentry *);
-	int (*symlink) (struct inode *,struct dentry *,const char *);
-	int (*mkdir) (struct inode *,struct dentry *,int);
-	int (*rmdir) (struct inode *,struct dentry *);
-	int (*mknod) (struct inode *,struct dentry *,int,dev_t);
-	int (*rename) (struct inode *, struct dentry *,
-			struct inode *, struct dentry *);
-	...
+    ...
+    int (*create) (struct inode *,struct dentry *,int, struct nameidata *);
+    struct dentry * (*lookup) (struct inode *,struct dentry *, struct nameidata *);
+    int (*link) (struct dentry *,struct inode *,struct dentry *);
+    int (*unlink) (struct inode *,struct dentry *);
+    int (*symlink) (struct inode *,struct dentry *,const char *);
+    int (*mkdir) (struct inode *,struct dentry *,int);
+    int (*rmdir) (struct inode *,struct dentry *);
+    int (*mknod) (struct inode *,struct dentry *,int,dev_t);
+    int (*rename) (struct inode *, struct dentry *,
+            struct inode *, struct dentry *);
+    ...
 };
 ```
 
@@ -128,40 +128,38 @@ struct inode_operations {
 ```text
 [trance@centos ~]$ ls -l /dev/sda
 brw-rw----. 1 root disk 8, 0 Oct 30 17:25 /dev/sda
-
 ```
 
 以 ext2 文件系统为例子，我们来看看它的 _mknod_ 的函数，关键得知道，究竟文件系统给设备文件的 inode 的 i\_fops 施加了什么魔法，首先我们得确定一点，就是的确是 ext2 文件系统给 inode 赋值了文件操作的函数，因为用户在/dev 目录下 调用的 mknod 必然就是由这个文件系统来指定操作。
 
-_mknod_  创建的一类特殊的设备文件，因为一块设备当然是没有大小的说法，但是却有设备号，所以在 Linux 下的文件系统驱动必然就应该提供这个接口，我们来看看ext2 文件系统的相关函数。
+_mknod_ 创建的一类特殊的设备文件，因为一块设备当然是没有大小的说法，但是却有设备号，所以在 Linux 下的文件系统驱动必然就应该提供这个接口，我们来看看ext2 文件系统的相关函数。
 
 ```c
 static int ext2_mknod (struct inode * dir, struct dentry *dentry, int mode, dev_t rdev)
 {
-	struct inode * inode;
-	int err;
+    struct inode * inode;
+    int err;
 
-	if (!new_valid_dev(rdev))
-		return -EINVAL;
-	dquot_initialize(dir);
-	inode = ext2_new_inode (dir, mode, &dentry->d_name);
+    if (!new_valid_dev(rdev))
+        return -EINVAL;
+    dquot_initialize(dir);
+    inode = ext2_new_inode (dir, mode, &dentry->d_name);
 // 这里分配一个新的 inode ， 我们不用关心
-	err = PTR_ERR(inode);
-	if (!IS_ERR(inode)) {
-		init_special_inode(inode, inode->i_mode, rdev);
+    err = PTR_ERR(inode);
+    if (!IS_ERR(inode)) {
+        init_special_inode(inode, inode->i_mode, rdev);
 // 这句是核心，对特殊的 inode 做初始化，即设备文件的inode
 #ifdef CONFIG_EXT2_FS_XATTR
-		inode->i_op = &ext2_special_inode_operations;
+        inode->i_op = &ext2_special_inode_operations;
 #endif
-		mark_inode_dirty(inode);
-		err = ext2_add_nondir(dentry, inode);
-	}
-	return err;
+        mark_inode_dirty(inode);
+        err = ext2_add_nondir(dentry, inode);
+    }
+    return err;
 }
-
 ```
 
-读者类比 open 便可以猜想到内核是怎么来到 _**ext2\_mknod**_，我们关心的是 _**init\_special\_inode**_ 这个函数，因为传入了设备号，很显然 trick 一定是在这了。_**init\_special\_inode**_ 是 Linux 内核提供的函数，思考一下为什么是这样，因为 mknod 必须得创建 inode，而不同的文件系统创建的 inode 不一样\(  因为设备节点是与创建它的文件系统有关，而设备节点具体的操作却是与特定的设备有关，文件系统需要做的事情是**让设备节点找到自己的驱动，或者借助操作系统来完成这一件事，但是设备节点创建的时候不一定有驱动** \)，所以需要文件系统提供 mknod 接口，创建了 inode 之后，文件系统又如何知道这个内核版本的设备文件如何处理呢？所以就使用了**内核**提供的接口，分工明确，各司其职。
+读者类比 open 便可以猜想到内核是怎么来到 _**ext2\_mknod**_，我们关心的是 _**init\_special\_inode**_ 这个函数，因为传入了设备号，很显然 trick 一定是在这了。_**init\_special\_inode**_ 是 Linux 内核提供的函数，思考一下为什么是这样，因为 mknod 必须得创建 inode，而不同的文件系统创建的 inode 不一样\( 因为设备节点是与创建它的文件系统有关，而设备节点具体的操作却是与特定的设备有关，文件系统需要做的事情是**让设备节点找到自己的驱动，或者借助操作系统来完成这一件事，但是设备节点创建的时候不一定有驱动** \)，所以需要文件系统提供 mknod 接口，创建了 inode 之后，文件系统又如何知道这个内核版本的设备文件如何处理呢？所以就使用了**内核**提供的接口，分工明确，各司其职。
 
 下面来揭开这个 _**init\_special\_inode**_ 的神秘面纱
 
@@ -169,51 +167,51 @@ static int ext2_mknod (struct inode * dir, struct dentry *dentry, int mode, dev_
 // fs/inode.c:1703:2.6.39.4
 void init_special_inode(struct inode *inode, umode_t mode, dev_t rdev)
 {
-	inode->i_mode = mode;
-	if (S_ISCHR(mode)) {
-		inode->i_fop = &def_chr_fops;
-		inode->i_rdev = rdev;
-	} else if (S_ISBLK(mode)) {
-		inode->i_fop = &def_blk_fops;
-		inode->i_rdev = rdev;
-	} else if (S_ISFIFO(mode))
-		inode->i_fop = &def_fifo_fops;
-	else if (S_ISSOCK(mode))
-		inode->i_fop = &bad_sock_fops;
-	else
-		printk(KERN_DEBUG "init_special_inode: bogus i_mode (%o) for"
-				  " inode %s:%lu\n", mode, inode->i_sb->s_id,
-				  inode->i_ino);
+    inode->i_mode = mode;
+    if (S_ISCHR(mode)) {
+        inode->i_fop = &def_chr_fops;
+        inode->i_rdev = rdev;
+    } else if (S_ISBLK(mode)) {
+        inode->i_fop = &def_blk_fops;
+        inode->i_rdev = rdev;
+    } else if (S_ISFIFO(mode))
+        inode->i_fop = &def_fifo_fops;
+    else if (S_ISSOCK(mode))
+        inode->i_fop = &bad_sock_fops;
+    else
+        printk(KERN_DEBUG "init_special_inode: bogus i_mode (%o) for"
+                  " inode %s:%lu\n", mode, inode->i_sb->s_id,
+                  inode->i_ino);
 }
 ```
 
 读者肯定也不惊讶，最终是内核设置了 inode 的文件操作函数，以块设备为例，**块设备文件创建之后，文件系统完成了 inode 的创建，而内核则是负责赋值了它的操作函数**。这就是 magic 所在拉。
 
-keke，到了敲黑板时间。总结一下，首先 mknod 这一命令最终来到了文件系统提供的接口，文件系统创建了 inode，接着对它的初始化交给了内核，于是乎，内核给它的 inode-&gt;i\_fop 赋值，这便是我们上一节所提及的关键。 
+keke，到了敲黑板时间。总结一下，首先 mknod 这一命令最终来到了文件系统提供的接口，文件系统创建了 inode，接着对它的初始化交给了内核，于是乎，内核给它的 inode-&gt;i\_fop 赋值，这便是我们上一节所提及的关键。
 
 ## 设备文件的面纱
 
-下面的关键就是， _**init\_special\_inode**_  所设置的文件操作函数拉。还是以块设备为例子。
+下面的关键就是， _**init\_special\_inode**_ 所设置的文件操作函数拉。还是以块设备为例子。
 
 ```c
 // fs/block_dev.c:1592:2.6.39.4
 
 const struct file_operations def_blk_fops = {
-	.open		= blkdev_open,
-	.release	= blkdev_close,
-	.llseek		= block_llseek,
-	.read		= do_sync_read,
-	.write		= do_sync_write,
-  	.aio_read	= generic_file_aio_read,
-	.aio_write	= blkdev_aio_write,
-	.mmap		= generic_file_mmap,
-	.fsync		= blkdev_fsync,
-	.unlocked_ioctl	= block_ioctl,
+    .open        = blkdev_open,
+    .release    = blkdev_close,
+    .llseek        = block_llseek,
+    .read        = do_sync_read,
+    .write        = do_sync_write,
+      .aio_read    = generic_file_aio_read,
+    .aio_write    = blkdev_aio_write,
+    .mmap        = generic_file_mmap,
+    .fsync        = blkdev_fsync,
+    .unlocked_ioctl    = block_ioctl,
 #ifdef CONFIG_COMPAT
-	.compat_ioctl	= compat_blkdev_ioctl,
+    .compat_ioctl    = compat_blkdev_ioctl,
 #endif
-	.splice_read	= generic_file_splice_read,
-	.splice_write	= generic_file_splice_write,
+    .splice_read    = generic_file_splice_read,
+    .splice_write    = generic_file_splice_write,
 };
 ```
 
@@ -224,30 +222,30 @@ const struct file_operations def_blk_fops = {
 
 static int blkdev_open(struct inode * inode, struct file * filp)
 {
-	struct block_device *bdev;
+    struct block_device *bdev;
 
-	/*
-	 * Preserve backwards compatibility and allow large file access
-	 * even if userspace doesn't ask for it explicitly. Some mkfs
-	 * binary needs it. We might want to drop this workaround
-	 * during an unstable branch.
-	 */
-	filp->f_flags |= O_LARGEFILE;
+    /*
+     * Preserve backwards compatibility and allow large file access
+     * even if userspace doesn't ask for it explicitly. Some mkfs
+     * binary needs it. We might want to drop this workaround
+     * during an unstable branch.
+     */
+    filp->f_flags |= O_LARGEFILE;
 
-	if (filp->f_flags & O_NDELAY)
-		filp->f_mode |= FMODE_NDELAY;
-	if (filp->f_flags & O_EXCL)
-		filp->f_mode |= FMODE_EXCL;
-	if ((filp->f_flags & O_ACCMODE) == 3)
-		filp->f_mode |= FMODE_WRITE_IOCTL;
+    if (filp->f_flags & O_NDELAY)
+        filp->f_mode |= FMODE_NDELAY;
+    if (filp->f_flags & O_EXCL)
+        filp->f_mode |= FMODE_EXCL;
+    if ((filp->f_flags & O_ACCMODE) == 3)
+        filp->f_mode |= FMODE_WRITE_IOCTL;
 
-	bdev = bd_acquire(inode);
-	if (bdev == NULL)
-		return -ENOMEM;
+    bdev = bd_acquire(inode);
+    if (bdev == NULL)
+        return -ENOMEM;
 
-	filp->f_mapping = bdev->bd_inode->i_mapping;
+    filp->f_mapping = bdev->bd_inode->i_mapping;
 
-	return blkdev_get(bdev, filp->f_mode, filp);
+    return blkdev_get(bdev, filp->f_mode, filp);
 }
 ```
 
@@ -261,77 +259,77 @@ static int blkdev_open(struct inode * inode, struct file * filp)
 // /fs/ext2/inode.c:1291
 struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 {
-	struct ext2_inode_info *ei;
-	struct buffer_head * bh;
-	struct ext2_inode *raw_inode;
-	struct inode *inode;
-	long ret = -EIO;
-	int n;
+    struct ext2_inode_info *ei;
+    struct buffer_head * bh;
+    struct ext2_inode *raw_inode;
+    struct inode *inode;
+    long ret = -EIO;
+    int n;
 
-	inode = iget_locked(sb, ino);
-	if (!inode)
-		return ERR_PTR(-ENOMEM);
-	if (!(inode->i_state & I_NEW))
-		return inode;
+    inode = iget_locked(sb, ino);
+    if (!inode)
+        return ERR_PTR(-ENOMEM);
+    if (!(inode->i_state & I_NEW))
+        return inode;
 
-	ei = EXT2_I(inode);
-	ei->i_block_alloc_info = NULL;
+    ei = EXT2_I(inode);
+    ei->i_block_alloc_info = NULL;
 
-	raw_inode = ext2_get_inode(inode->i_sb, ino, &bh);
-	if (IS_ERR(raw_inode)) {
-		ret = PTR_ERR(raw_inode);
- 		goto bad_inode;
-	}
-	.....
-	.....
-	if (S_ISREG(inode->i_mode)) {
-		inode->i_op = &ext2_file_inode_operations;
-		if (ext2_use_xip(inode->i_sb)) {
-			inode->i_mapping->a_ops = &ext2_aops_xip;
-			inode->i_fop = &ext2_xip_file_operations;
-		} else if (test_opt(inode->i_sb, NOBH)) {
-			inode->i_mapping->a_ops = &ext2_nobh_aops;
-			inode->i_fop = &ext2_file_operations;
-		} else {
-			inode->i_mapping->a_ops = &ext2_aops;
-			inode->i_fop = &ext2_file_operations;
-		}
-	} else if (S_ISDIR(inode->i_mode)) {
-		inode->i_op = &ext2_dir_inode_operations;
-		inode->i_fop = &ext2_dir_operations;
-		if (test_opt(inode->i_sb, NOBH))
-			inode->i_mapping->a_ops = &ext2_nobh_aops;
-		else
-			inode->i_mapping->a_ops = &ext2_aops;
-	} else if (S_ISLNK(inode->i_mode)) {
-		if (ext2_inode_is_fast_symlink(inode)) {
-			inode->i_op = &ext2_fast_symlink_inode_operations;
-			nd_terminate_link(ei->i_data, inode->i_size,
-				sizeof(ei->i_data) - 1);
-		} else {
-			inode->i_op = &ext2_symlink_inode_operations;
-			if (test_opt(inode->i_sb, NOBH))
-				inode->i_mapping->a_ops = &ext2_nobh_aops;
-			else
-				inode->i_mapping->a_ops = &ext2_aops;
-		}
-	} else { // ******** 最重要的就是这里，初始化特殊的节点
-		inode->i_op = &ext2_special_inode_operations;
-		if (raw_inode->i_block[0])
-			init_special_inode(inode, inode->i_mode,
-			   old_decode_dev(le32_to_cpu(raw_inode->i_block[0])));
-		else 
-			init_special_inode(inode, inode->i_mode,
-			   new_decode_dev(le32_to_cpu(raw_inode->i_block[1])));
-	}
-	brelse (bh);
-	ext2_set_inode_flags(inode);
-	unlock_new_inode(inode);
-	return inode;
-	
+    raw_inode = ext2_get_inode(inode->i_sb, ino, &bh);
+    if (IS_ERR(raw_inode)) {
+        ret = PTR_ERR(raw_inode);
+         goto bad_inode;
+    }
+    .....
+    .....
+    if (S_ISREG(inode->i_mode)) {
+        inode->i_op = &ext2_file_inode_operations;
+        if (ext2_use_xip(inode->i_sb)) {
+            inode->i_mapping->a_ops = &ext2_aops_xip;
+            inode->i_fop = &ext2_xip_file_operations;
+        } else if (test_opt(inode->i_sb, NOBH)) {
+            inode->i_mapping->a_ops = &ext2_nobh_aops;
+            inode->i_fop = &ext2_file_operations;
+        } else {
+            inode->i_mapping->a_ops = &ext2_aops;
+            inode->i_fop = &ext2_file_operations;
+        }
+    } else if (S_ISDIR(inode->i_mode)) {
+        inode->i_op = &ext2_dir_inode_operations;
+        inode->i_fop = &ext2_dir_operations;
+        if (test_opt(inode->i_sb, NOBH))
+            inode->i_mapping->a_ops = &ext2_nobh_aops;
+        else
+            inode->i_mapping->a_ops = &ext2_aops;
+    } else if (S_ISLNK(inode->i_mode)) {
+        if (ext2_inode_is_fast_symlink(inode)) {
+            inode->i_op = &ext2_fast_symlink_inode_operations;
+            nd_terminate_link(ei->i_data, inode->i_size,
+                sizeof(ei->i_data) - 1);
+        } else {
+            inode->i_op = &ext2_symlink_inode_operations;
+            if (test_opt(inode->i_sb, NOBH))
+                inode->i_mapping->a_ops = &ext2_nobh_aops;
+            else
+                inode->i_mapping->a_ops = &ext2_aops;
+        }
+    } else { // ******** 最重要的就是这里，初始化特殊的节点
+        inode->i_op = &ext2_special_inode_operations;
+        if (raw_inode->i_block[0])
+            init_special_inode(inode, inode->i_mode,
+               old_decode_dev(le32_to_cpu(raw_inode->i_block[0])));
+        else 
+            init_special_inode(inode, inode->i_mode,
+               new_decode_dev(le32_to_cpu(raw_inode->i_block[1])));
+    }
+    brelse (bh);
+    ext2_set_inode_flags(inode);
+    unlock_new_inode(inode);
+    return inode;
+
 bad_inode:
-	iget_failed(inode);
-	return ERR_PTR(ret);
+    iget_failed(inode);
+    return ERR_PTR(ret);
 }
 ```
 
@@ -351,7 +349,7 @@ bad_inode:
 所以得出结论，/dev/sda 的内容和特定的文件系统无关（不由文件系统决定），但是一般文本文件和文件系统息息相关。
 {% endhint %}
 
-![&#x5757;&#x8BBE;&#x5907;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5305;&#x542B;&#x5173;&#x7CFB;](../.gitbook/assets/image%20%2837%29.png)
+![&#x5757;&#x8BBE;&#x5907;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5305;&#x542B;&#x5173;&#x7CFB;](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2837%29.png)
 
 最后以一张图结束本文。
 

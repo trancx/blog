@@ -16,10 +16,9 @@ description: 桟的一些知识 - 以前的笔记
 
 其实这个顺序为什么是这样，根本不重要，关键在于什么呢，数据是有序放进去的，也就是说拿出来的时候一定也是有序的，它跟数组没有区别，只是我们要拿到第一个元素的时候，是到最后面去拿。但是，**实际上我们也不一定遵循这个顺序**，有时候我们甚至可以直接抛弃一块连续的空间，比如后面抛弃局部变量空间的时候。
 
-在  x86 的体系下，有一个专门的寄存器叫，sp\( stack pointer \)，它存储了一个地址，就是桟顶的地址，更准确的说，是**最后一个放进去的数据**的地址
+在 x86 的体系下，有一个专门的寄存器叫，sp\( stack pointer \)，它存储了一个地址，就是桟顶的地址，更准确的说，是**最后一个放进去的数据**的地址
 
 ```text
-
 sp[0] = 最后一个放进去的元素
 sp[1] = 倒数第二个放进去的元素
 ...
@@ -28,7 +27,6 @@ sp[1] = 倒数第二个放进去的元素
 在初始化的时候，无论是操作系统的初始化，又或是普通程序初始化，其中要做一件事是，分配一块区域，让 sp 指向区域最末端
 
 ```c
-
 void * ptr = malloc(4KB);
 sp  =  (int)ptr + (1 << 22);
 
@@ -60,17 +58,15 @@ sub $4, sp  // sp = sp - 4;
 mov $1, [sp]
 
 此时的 sp == 0x3fffffc
-
 ```
 
-上面的代码说明了 sp 永远指向的地方都是存放数据的地方，我们用 \[sp\] 访问的是存在数据的地方，当我们想加入新数据的话，也就是 push 操作，**必须得把 sp  -= 4** 　也就让它的地址指向一块当前没有数据的地方，然后在放入数据，这样　sp 再次指向了**最后一次放入的数据**。
+上面的代码说明了 sp 永远指向的地方都是存放数据的地方，我们用 \[sp\] 访问的是存在数据的地方，当我们想加入新数据的话，也就是 push 操作，**必须得把 sp -= 4** 也就让它的地址指向一块当前没有数据的地方，然后在放入数据，这样 sp 再次指向了**最后一次放入的数据**。
 
-![push](../.gitbook/assets/image%20%2818%29.png)
+![push](../.gitbook/assets/image%20%2820%29.png)
 
 那么同理也可以知道，如果执行 pop 操作
 
 ```c
-
 pop():
     int * p = (int *)sp;
     int data = *p;
@@ -83,11 +79,11 @@ pop:
     pop reg
 ```
 
-也就是说，先取数据在改变 sp 	
+也就是说，先取数据在改变 sp
 
 **pop** 之后，并不会请空无效数据\(data\)的值，stack pointer已经标示了当前有效数据就是在它之上的数据 其余数据是什么并不关心，所以在C中，一些局部变量，我们虽然在函数体之外，仍然可以访问到。
 
-![pop](../.gitbook/assets/image%20%2827%29.png)
+![pop](../.gitbook/assets/image%20%2829%29.png)
 
 最后总结一下，栈就是指数据取出和放入遵循**一定规则**的区域，没有什么神秘的地方。然后，sp 指针指向的是最后一个放入数据，如果没有放入数据就访问，会导致内存越界。
 
@@ -102,7 +98,6 @@ pop:
 变量，就是一块内存空间，大小取决于它的数据类型本身的大小，而局部变量，其实就是它所在的空间正好就是桟里面。
 
 ```c
-
 void foo()
 {
     int i=0,j=1,k=2;
@@ -125,7 +120,6 @@ foo:
     ...     
     add $12, sp  // 此时桟顶数据已经不再包括i,j,k了
     ret          // 函数返回
-
 ```
 
 代码不难理解，下面就是汇编代码，为什么局部变量在函数体之外就不能访问呢，原因很简单，当我们函数返回之前，分配给局部变量的空间我们回收了，回收是通过改变桟指针，sp，来实现的（注意我们的桟是从高地址到低地址），之前也提到了，sp指向的空间以下的空间都是无效的数据，所以我们认为 i,j,k 这几个变量已经无效了，所以它们被称为局部变量。
@@ -166,7 +160,6 @@ foo:
 // 调用函数
     call bar
     ...
-
 ```
 
 所以说局部变量的本质和传递的参数都一样，它们都是**桟上的空间**。有趣的一个地方是，参数是**从右至左**的顺序入桟。其实就是一个习惯，稍后会解释。
@@ -194,7 +187,7 @@ bar:
     0xb00    ...
     ....
     0xbef    ret
-        
+
 foo:
     0xa00    ...
     0xa04    push $2
@@ -248,7 +241,7 @@ sp 指向的是 最 后 一 个 入 栈 的 元 素
 ret::
     pop  reg    // 把地址拿出来
     jmp  reg    // goto 到目标地址
-    
+
     以上面的例子， reg  = 0xa0c
 ```
 
@@ -262,15 +255,14 @@ foo:
     0xa04    push $2
     0xa08    call bar
     0xa0c    ...
-    
+
     当 CPU 执行 0xa04 指令的时候
     还有一个 ip ( instruct pointer ) 寄存器，指向的就是 0xa08
     我们上课会学到的 PC 指针，它就是本尊啦
-    
+
 也就说 call 其实是这么做的
     push  ip
     jmp    0xxx  目标代码的地址
-
 ```
 
 这些寄存器是什么都不重要，关键我们得理解其中栈的作用，就是作为一个**备份的区域**，存函数参数，放了调用函数之后该回到的地方 以及 函数本身要使用的局部变量。
@@ -293,25 +285,24 @@ caller:
     // 准备阶段
     push   bp
     mov    sp, bp
-    
+
     // 开辟 ret 局部变量的空间
     sub    $4, sp
-    
+
     // 参数入栈
     push   $1
     call   func
-    
+
     //  存储返回值到本地变量中
     mov    ax, [sp+4]
-    
+
    //  还原状态
     mov    bp, sp
     pop    bp
     ret
-
 ```
 
-![stack](../.gitbook/assets/image%20%2825%29.png)
+![stack](../.gitbook/assets/image%20%2827%29.png)
 
 调用 **函数之前 和 函数之后 的 sp 一定是一样**的，所以 sp 指向的一定是最后一次 push 导致 sp 下移的位置。
 
@@ -334,15 +325,15 @@ func:
     // 准备阶段
     push   bp
     mov    sp, bp
-    
+
    // 开辟 local 局部变量的空间
     sub    $4, sp
-    
+
    //  [bp] 是 bp的备份， [bp+4]  是函数返回地址
     inc  [bp+8] 
-    
+
     mov  [bp+8], ax   // 返回值
-    
+
     //  还原状态
     mov    bp, sp
     pop    bp
@@ -360,112 +351,112 @@ func:
 前面说的参数的传入以及局部变量的储存，都是 x86 上的函数调用规则，是有一套协议的，下面给上具体的反汇编代码了，之前的都是伪代码。
 
 ```c
-int a[5] = {1,2,3,4,5};	/* 数组， 全局变量 */
+int a[5] = {1,2,3,4,5};    /* 数组， 全局变量 */
 
 int  func(int a) {
-	return a;
+    return a;
 }
 
 int  d(int * a, int b, int c, int d, int e, int f) {
-	(*a)++;
-	func(b);	
-	return e+f;
+    (*a)++;
+    func(b);    
+    return e+f;
 }
 
 int main(void) {
-	
-	d(a, 1,2,3,4, 5);
 
-	return 0;
+    d(a, 1,2,3,4, 5);
+
+    return 0;
 }
 ```
 
-![1](../.gitbook/assets/image%20%2832%29.png)
+![1](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2832%29.png)
 
-![2](../.gitbook/assets/image%20%2828%29.png)
+![2](../.gitbook/assets/image%20%2830%29.png)
 
-![3](../.gitbook/assets/image%20%2821%29.png)
+![3](../.gitbook/assets/image%20%2823%29.png)
 
-![4](../.gitbook/assets/image%20%2833%29.png)
+![4](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2833%29.png)
 
-![5](../.gitbook/assets/image%20%2810%29.png)
+![5](../.gitbook/assets/image%20%2811%29.png)
 
 ARM 就不一个一个分析了，关键在于参数直接用寄存器和桟传递的，然后返回值也是如此，然后局部变量的位置有所不同，其实就是**函数调用的规范**不一样。
 
 ```c
 .data
 a:
-	.word	1
-	.word	2
-	.word	3
-	.word	4
-	.word	5
+    .word    1
+    .word    2
+    .word    3
+    .word    4
+    .word    5
 
-	.text
+    .text
 func:
-	str	fp, [sp, #-4]!
-	add	fp, sp, #0
-	sub	sp, sp, #12
-	str	r0, [fp, #-8]
-	ldr	r3, [fp, #-8]
-	mov	r0, r3
-	add	sp, fp, #0
+    str    fp, [sp, #-4]!
+    add    fp, sp, #0
+    sub    sp, sp, #12
+    str    r0, [fp, #-8]
+    ldr    r3, [fp, #-8]
+    mov    r0, r3
+    add    sp, fp, #0
 
-	ldr	fp, [sp], #4
-	bx	lr
+    ldr    fp, [sp], #4
+    bx    lr
 
 d:
-	push	{fp, lr}
-	add	fp, sp, #4
-	sub	sp, sp, #16
-	str	r0, [fp, #-8]
-	str	r1, [fp, #-12]
-	str	r2, [fp, #-16]
-	str	r3, [fp, #-20]
-	ldr	r3, [fp, #-8]
-	ldr	r3, [r3]
-	add	r2, r3, #1
-	ldr	r3, [fp, #-8]
-	str	r2, [r3]
-	ldr	r0, [fp, #-12]
-	bl	func
-	ldr	r2, [fp, #4]
-	ldr	r3, [fp, #8]
-	add	r3, r2, r3
-	mov	r0, r3
-	sub	sp, fp, #4
+    push    {fp, lr}
+    add    fp, sp, #4
+    sub    sp, sp, #16
+    str    r0, [fp, #-8]
+    str    r1, [fp, #-12]
+    str    r2, [fp, #-16]
+    str    r3, [fp, #-20]
+    ldr    r3, [fp, #-8]
+    ldr    r3, [r3]
+    add    r2, r3, #1
+    ldr    r3, [fp, #-8]
+    str    r2, [r3]
+    ldr    r0, [fp, #-12]
+    bl    func
+    ldr    r2, [fp, #4]
+    ldr    r3, [fp, #8]
+    add    r3, r2, r3
+    mov    r0, r3
+    sub    sp, fp, #4
 
-	pop	{fp, lr}
-	bx	lr
+    pop    {fp, lr}
+    bx    lr
 
 
 main:
-	push	{fp, lr}
-	add	fp, sp, #4
-	sub	sp, sp, #8
-	mov	r3, #5
-	str	r3, [sp, #4]
-	mov	r3, #4
-	str	r3, [sp]
-	mov	r3, #3
-	mov	r2, #2
-	mov	r1, #1
-	ldr	r0, .L7
-	bl	d
-	mov	r3, #0
-	mov	r0, r3
-	sub	sp, fp, #4
+    push    {fp, lr}
+    add    fp, sp, #4
+    sub    sp, sp, #8
+    mov    r3, #5
+    str    r3, [sp, #4]
+    mov    r3, #4
+    str    r3, [sp]
+    mov    r3, #3
+    mov    r2, #2
+    mov    r1, #1
+    ldr    r0, .L7
+    bl    d
+    mov    r3, #0
+    mov    r0, r3
+    sub    sp, fp, #4
 
-	pop	{fp, lr}
-	bx	lr
+    pop    {fp, lr}
+    bx    lr
 
 .L7:
-	.word	a
+    .word    a
 ```
 
 给出调用的桟
 
-![6](../.gitbook/assets/image%20%2834%29.png)
+![6](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2834%29.png)
 
 ## 总结
 
@@ -473,9 +464,9 @@ main:
 
 x86
 
-![](../.gitbook/assets/image%20%2831%29.png)
+![](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2831%29.png)
 
 ARM
 
-![](../.gitbook/assets/image%20%2815%29.png)
+![](../.gitbook/assets/image%20%2817%29.png)
 

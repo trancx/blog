@@ -4,7 +4,7 @@ description: 探索使人进步
 
 # 最近在玩WinIo遇到的问题
 
-##  o\(\*▽\*\)o
+## o\(\*▽\*\)o
 
 WinIo 库是能让用户直接访问物理地址的一个库，当然这里所说的物理地址是经过页映射之后得到的地址，并不是真正意义上的物理地址，参考之前一篇文章----地址空间。
 
@@ -50,34 +50,34 @@ WinIo 代码似乎并不复杂，当然我也在探索中，作为是 Windows �
 
 权限的问题很好解决，如果是IDE测试，那么就管理员权限启动 IDE 就可以解决，对于驱动的原因，签名的话，进入测试模式，给驱动打上签名就可以解决，测试模式的进入去看其他地方吧，签名的话右键sys文件，就可以看见。
 
-大部分人做了以上两件事，最终得到的还是不能初始化，其实就是路径的问题，很多人说的是  .dll 和 .sys 必须要在同一个目录下，这其实不全对，其实是取决于 dll 加载的方式。
+大部分人做了以上两件事，最终得到的还是不能初始化，其实就是路径的问题，很多人说的是 .dll 和 .sys 必须要在同一个目录下，这其实不全对，其实是取决于 dll 加载的方式。
 
 我们先看看， dll 是怎么获取到驱动的路径的。
 
 ```cpp
 bool GetDriverPath() //WINIO 源码
 {
-	PWSTR pszSlash;
+    PWSTR pszSlash;
 
-	if ( !GetModuleFileNameW( (HINSTANCE)(GetModuleHandle(NULL)),
-							szWinIoDriverPath,
-							sizeof(szWinIoDriverPath) )  )
-		return false;
-	pszSlash = wcsrchr(szWinIoDriverPath, '\\');
+    if ( !GetModuleFileNameW( (HINSTANCE)(GetModuleHandle(NULL)),
+                            szWinIoDriverPath,
+                            sizeof(szWinIoDriverPath) )  )
+        return false;
+    pszSlash = wcsrchr(szWinIoDriverPath, '\\');
 
-	if (pszSlash)
-		pszSlash[1] = 0;
-	else
-		return false;
+    if (pszSlash)
+        pszSlash[1] = 0;
+    else
+        return false;
 
-	if (g_Is64BitOS)  // 全局变量，判断是否为64bit
-		wcscat(szWinIoDriverPath, L"winio64.sys");
-	else
-		wcscat(szWinIoDriverPath, L"winio32.sys");
+    if (g_Is64BitOS)  // 全局变量，判断是否为64bit
+        wcscat(szWinIoDriverPath, L"winio64.sys");
+    else
+        wcscat(szWinIoDriverPath, L"winio32.sys");
 
-	wprintf(L"%s\n", szWinIoDriverPath);
+    wprintf(L"%s\n", szWinIoDriverPath);
 
-	return true;
+    return true;
 }
 ```
 
@@ -102,22 +102,22 @@ pszSlash[1] = 0; 其实把字符串截断了，最后 wcscat 其实就是在后�
 wchar_t szWinIoDriverPath[32768];
 void printPath()
 {
-	PWSTR pszSlash;
-	if ( !GetModuleFileNameW( (HINSTANCE)(GetModuleHandle(NULL)),
-							szWinIoDriverPath,
-							sizeof(szWinIoDriverPath) )  ) {
-		puts("error at GetModuleFileName");
-		return;
-	}
-	pszSlash = wcsrchr(szWinIoDriverPath, '\\');
-	wprintf(L"%s\n", szWinIoDriverPath);
+    PWSTR pszSlash;
+    if ( !GetModuleFileNameW( (HINSTANCE)(GetModuleHandle(NULL)),
+                            szWinIoDriverPath,
+                            sizeof(szWinIoDriverPath) )  ) {
+        puts("error at GetModuleFileName");
+        return;
+    }
+    pszSlash = wcsrchr(szWinIoDriverPath, '\\');
+    wprintf(L"%s\n", szWinIoDriverPath);
 
-	if (pszSlash)
-		pszSlash[1] = 0;
+    if (pszSlash)
+        pszSlash[1] = 0;
 
-		wcscat(szWinIoDriverPath, L"winio64.sys");
+        wcscat(szWinIoDriverPath, L"winio64.sys");
 
-	wprintf(L"%s\n", szWinIoDriverPath);
+    wprintf(L"%s\n", szWinIoDriverPath);
 }
 写个 main 程序 跑一遍 得到输出
 
@@ -125,7 +125,7 @@ C:\Users\trance\eclipse-workspace\testdll\Debug\testdll.exe
 C:\Users\trance\eclipse-workspace\testdll\Debug\winio64.sys
 ```
 
-也就是说，其实这个 Dll 默认了一件事，驱动就在我当前的目录下，我只需要改写就能得到，但是我们IDE在调试的时候，是会建立一个 Debug 目录的，如果我们放在  /project/src 下，就会寻找不到驱动从而出错，实际上IDE运行的是Debug目录下的一个exe，那么我们把驱动放在那个目录下是否可行了呢？
+也就是说，其实这个 Dll 默认了一件事，驱动就在我当前的目录下，我只需要改写就能得到，但是我们IDE在调试的时候，是会建立一个 Debug 目录的，如果我们放在 /project/src 下，就会寻找不到驱动从而出错，实际上IDE运行的是Debug目录下的一个exe，那么我们把驱动放在那个目录下是否可行了呢？
 
 当然没有这么简单，思考一下，如果我们是用C/C++或者是C\#等代码，自己的代码主动加载dll，那么得到的路径就是在工程（debug目录也算是），但是我们如果使用的是java，借用的是JNA的话，那么就有点不同了。
 
@@ -138,15 +138,15 @@ import com.sun.jna.Native;
 
 public class Test {
 
-	public interface WinIo extends Library {
-		@SuppressWarnings("deprecation")
-		WinIo Instance = ( WinIo )Native.loadLibrary("testdll", WinIo.class);		
-		void printPath();
-	}
-	
-	public static void main(String [] arg) {
-		WinIo.Instance.printPath();
-	}
+    public interface WinIo extends Library {
+        @SuppressWarnings("deprecation")
+        WinIo Instance = ( WinIo )Native.loadLibrary("testdll", WinIo.class);        
+        void printPath();
+    }
+
+    public static void main(String [] arg) {
+        WinIo.Instance.printPath();
+    }
 }
 ```
 
@@ -183,17 +183,17 @@ C:\Program Files\Java\jre1.8.0_181\bin\winio64.sys
 
 ```java
 public interface WinIo extends Library {
-		@SuppressWarnings("deprecation")
-		WinIo Instance = ( WinIo )Native.loadLibrary("WinIo64", WinIo.class);		
-		boolean ShutdownWinIo();
-		boolean InitializeWinIo();
-	}
-	
-	public static void main(String [] arg) {
-		if( WinIo.Instance.InitializeWinIo()) {
-			System.out.println("success");
-		}
-	}
+        @SuppressWarnings("deprecation")
+        WinIo Instance = ( WinIo )Native.loadLibrary("WinIo64", WinIo.class);        
+        boolean ShutdownWinIo();
+        boolean InitializeWinIo();
+    }
+
+    public static void main(String [] arg) {
+        if( WinIo.Instance.InitializeWinIo()) {
+            System.out.println("success");
+        }
+    }
 ```
 
 ![](../.gitbook/assets/tu-pian%20%289%29.png)
@@ -201,11 +201,11 @@ public interface WinIo extends Library {
 上面可以看见，存在了一个 winio64 的驱动，路径也就是 java之下，在我们没有调用 ShutdownWinIo 或者关机之前，驱动都会存在于内存中，如果我们把驱动的源文件移除，然后调用函数，仍然可以成功，因为驱动没有被卸载。
 
 ```java
-	public static void main(String [] arg) {
-		if( WinIo.Instance.ShutdownWinIo() ) {
-			System.out.println("success");
-		}
-	}
+    public static void main(String [] arg) {
+        if( WinIo.Instance.ShutdownWinIo() ) {
+            System.out.println("success");
+        }
+    }
 ```
 
 修改代码，移除驱动。
@@ -229,7 +229,7 @@ public static void main(String [] arg) {
 
 output：
     fail
-    
+
 如果把驱动名字还原
 
 output：
@@ -248,11 +248,7 @@ BSTR\(Basic STRing\)是一个OLECHAR\*类型的Unicode字符串。BSTR实际上�
 
 LPSTR和LPWSTR是Win32和VC++所使用的一种字符串数据类型。LPSTR被定义成是一个指向以NULL\(‘/0’\)结尾的8位ANSI字符数组指针，而LPWSTR是一个指向以NULL结尾的16位双字节字符数组指针
 
-
-
 ![](../.gitbook/assets/tu-pian%20%285%29.png)
-
-
 
 ![](../.gitbook/assets/tu-pian.png)
 

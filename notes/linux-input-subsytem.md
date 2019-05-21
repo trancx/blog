@@ -14,7 +14,7 @@
 
 这里都是说一些源代码，还有自己的一些理解，其实不同的子系统（总线，USB），都有一个显著的特点，就是有俩个**全局变量**，分别是_**一条链把所有的设备连接，另外一条就连接所有的驱动**_，然后设备和驱动之间如果匹配成功（所谓匹配成功，以 PCI设备和驱动为例，PCI 设备在Rom区会标识自己的ID，及生产厂商等信息，驱动加载的时候也会提供这些信息，然后不管挂载新驱动还是设备，都会遍历所有的设备（如果是挂载设备，就遍历驱动），然后比对他们的ID是否相同，如果相同就会挂钩，挂钩就是指一些指针存储着对方的信息，这时候我们就叫匹配成功），就会有相关的指针存储对方的信息。
 
-**重点**： 1. 程序有办法知道目前挂载的所有设备还有驱动  2. 驱动和设备都有一个相同的id用来辨识
+**重点**： 1. 程序有办法知道目前挂载的所有设备还有驱动 2. 驱动和设备都有一个相同的id用来辨识
 
 {% hint style="info" %}
 如果有读者看过文件系统和超级块（vfs 实现），其实也有全局变量把它们串联在一起，目的就是方便遍历
@@ -25,7 +25,7 @@
 了解上面这个特点，现在看 input，一个全局的 List 头，用来挂载所有的 输入设备，还有一个挂载的就是驱动，上面一个宏定义了内核能支持的最大输入设备数，另外还有一个表，用来快速获取对应的驱动，等下们可以看到它的用处。\( linux -2.6.39 \)
 
 ```c
-#define INPUT_DEVICES	256
+#define INPUT_DEVICES    256
 
 static LIST_HEAD(input_dev_list);
 static LIST_HEAD(input_handler_list);
@@ -37,39 +37,39 @@ static struct input_handler *input_table[8];
 
 ```c
 static const struct file_operations input_fops = {
-	.owner = THIS_MODULE,
-	.open = input_open_file,
-	.llseek = noop_llseek,
+    .owner = THIS_MODULE,
+    .open = input_open_file,
+    .llseek = noop_llseek,
 };
 
 static int __init input_init(void)
 {
-	int err;
+    int err;
 
-	err = class_register(&input_class);
-	if (err) {
-		pr_err("unable to register input_dev class\n");
-		return err;
-	}
+    err = class_register(&input_class);
+    if (err) {
+        pr_err("unable to register input_dev class\n");
+        return err;
+    }
 
-	err = input_proc_init();
-	if (err)
-		goto fail1;
+    err = input_proc_init();
+    if (err)
+        goto fail1;
 
-	err = register_chrdev(INPUT_MAJOR, "input", &input_fops);
-	if (err) {
-		pr_err("unable to register char major %d", INPUT_MAJOR);
-		goto fail2;
-	}
+    err = register_chrdev(INPUT_MAJOR, "input", &input_fops);
+    if (err) {
+        pr_err("unable to register char major %d", INPUT_MAJOR);
+        goto fail2;
+    }
 
-	return 0;
+    return 0;
 
- fail2:	input_proc_exit();
- fail1:	class_unregister(&input_class);
-	return err;
+ fail2:    input_proc_exit();
+ fail1:    class_unregister(&input_class);
+    return err;
 }
 ...
-subsys_initcall(input_init); 
+subsys_initcall(input_init);
 ```
 
 关键在，注册一个字符设备，它的设备号就是 13（INPUT\_MAJOR），设备号分为主次设备号的原因就是**分类**，其实**本质就是一个数字**，多嘴一句，如何通过设备号找到对应的设备很简单，就是一个映射的表，最简单的办法就是创建一个数组大小就是 设备号的最大值，里面存放设备的地址，但是这样太浪费了，所以我们就用数组加链表，本质其实还是一样的。
@@ -83,29 +83,29 @@ subsys_initcall(input_init);
 ```c
 int input_register_handler(struct input_handler *handler)
 {
-	struct input_dev *dev;
-	int retval;
+    struct input_dev *dev;
+    int retval;
 
-	retval = mutex_lock_interruptible(&input_mutex);
+    retval = mutex_lock_interruptible(&input_mutex);
 
-	INIT_LIST_HEAD(&handler->h_list);
+    INIT_LIST_HEAD(&handler->h_list);
 
-	if (handler->fops != NULL) {
-		... // minor/32得到它的位置，便于快速访问驱动
-		input_table[handler->minor >> 5] = handler;   
-	}
-	// 添加到驱动的链表尾端
-	list_add_tail(&handler->node, &input_handler_list);
+    if (handler->fops != NULL) {
+        ... // minor/32得到它的位置，便于快速访问驱动
+        input_table[handler->minor >> 5] = handler;   
+    }
+    // 添加到驱动的链表尾端
+    list_add_tail(&handler->node, &input_handler_list);
 
-	// 遍历所有的设备，匹配驱动和设备
-	list_for_each_entry(dev, &input_dev_list, node)
-		input_attach_handler(dev, handler);
+    // 遍历所有的设备，匹配驱动和设备
+    list_for_each_entry(dev, &input_dev_list, node)
+        input_attach_handler(dev, handler);
 
-	input_wakeup_procfs_readers();
+    input_wakeup_procfs_readers();
 
  out:
-	mutex_unlock(&input_mutex);
-	return retval;
+    mutex_unlock(&input_mutex);
+    return retval;
 }
 ```
 {% endcode-tabs-item %}
@@ -119,49 +119,49 @@ int input_register_handler(struct input_handler *handler)
 {% code-tabs-item title="/include/linux/input.h" %}
 ```c
 struct input_handler {
-	void *private;
+    void *private;
 
-	void (*event)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
-	bool (*filter)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
-	bool (*match)(struct input_handler *handler, struct input_dev *dev);
-	int (*connect)(struct input_handler *handler, struct input_dev *dev, const struct input_device_id *id);
-	void (*disconnect)(struct input_handle *handle);
-	void (*start)(struct input_handle *handle);
+    void (*event)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
+    bool (*filter)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
+    bool (*match)(struct input_handler *handler, struct input_dev *dev);
+    int (*connect)(struct input_handler *handler, struct input_dev *dev, const struct input_device_id *id);
+    void (*disconnect)(struct input_handle *handle);
+    void (*start)(struct input_handle *handle);
 
-	const struct file_operations *fops;
-	int minor;
-	const char *name;
+    const struct file_operations *fops;
+    int minor;
+    const char *name;
 
-	const struct input_device_id *id_table;
+    const struct input_device_id *id_table;
 
-	struct list_head	h_list;  // handle_list 连接它的handle会挂载于这里
-	struct list_head	node;	// 挂载到全局驱动表上
+    struct list_head    h_list;  // handle_list 连接它的handle会挂载于这里
+    struct list_head    node;    // 挂载到全局驱动表上
 };
 
 /**
  * struct input_handle - links input device with an input handler
  * @private: handler-specific data
  * @open: counter showing whether the handle is 'open', i.e. should deliver
- *	events from its device
+ *    events from its device
  * @name: name given to the handle by handler that created it
  * @dev: input device the handle is attached to
  * @handler: handler that works with the device through this handle
  * @d_node: used to put the handle on device's list of attached handles
  * @h_node: used to put the handle on handler's list of handles from which
- *	it gets events
+ *    it gets events
  */
 struct input_handle {
 
-	void *private;
+    void *private;
 
-	int open;
-	const char *name;
+    int open;
+    const char *name;
 
-	struct input_dev *dev;
-	struct input_handler *handler;
+    struct input_dev *dev;
+    struct input_handler *handler;
 
-	struct list_head	d_node;
-	struct list_head	h_node;
+    struct list_head    d_node;
+    struct list_head    h_node;
 };
 ```
 {% endcode-tabs-item %}
@@ -176,66 +176,65 @@ struct input_handle {
 ```c
 static int __init evdev_init(void)
 {
-	return input_register_handler(&evdev_handler);
+    return input_register_handler(&evdev_handler);
 }
 
 static struct input_handler evdev_handler = {
-	.event		= evdev_event,
-	.connect	= evdev_connect,
-	.disconnect	= evdev_disconnect,
-	.fops		= &evdev_fops,
-	.minor		= EVDEV_MINOR_BASE,
-	.name		= "evdev",
-	.id_table	= evdev_ids,
+    .event        = evdev_event,
+    .connect    = evdev_connect,
+    .disconnect    = evdev_disconnect,
+    .fops        = &evdev_fops,
+    .minor        = EVDEV_MINOR_BASE,
+    .name        = "evdev",
+    .id_table    = evdev_ids,
 };
 
 static const struct input_device_id evdev_ids[] = {
-	{ .driver_info = 1 },	/* Matches all devices */
-	{ },			/* Terminating zero entry */
+    { .driver_info = 1 },    /* Matches all devices */
+    { },            /* Terminating zero entry */
 };
-
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
- id\_table 就是我们上面所说的和设备匹配的一个表，注释里说明了一个事实，就是_**所有的输入设备都会和这个evdev的驱动匹配**_。
+id\_table 就是我们上面所说的和设备匹配的一个表，注释里说明了一个事实，就是_**所有的输入设备都会和这个evdev的驱动匹配**_。
 
 {% code-tabs %}
 {% code-tabs-item title="drivers/input/input.c" %}
 ```c
 static const struct input_device_id *input_match_device(struct input_handler *handler,
-							struct input_dev *dev)
+                            struct input_dev *dev)
 {
-	const struct input_device_id *id;
-	int i;
-	// 注意到，evdev的id_table->driver_info = 1
-	// 这个循环可以一直进行下去
-	for (id = handler->id_table; id->flags || id->driver_info; id++) {
+    const struct input_device_id *id;
+    int i;
+    // 注意到，evdev的id_table->driver_info = 1
+    // 这个循环可以一直进行下去
+    for (id = handler->id_table; id->flags || id->driver_info; id++) {
 
-		...	....
+        ...    ....
 
-		if (!handler->match || handler->match(handler, dev))
-			return id;
-	}
-	 
-	return NULL;
+        if (!handler->match || handler->match(handler, dev))
+            return id;
+    }
+
+    return NULL;
 }
 
 static int input_attach_handler(struct input_dev *dev, struct input_handler *handler)
 {
-	const struct input_device_id *id;
-	int error;
+    const struct input_device_id *id;
+    int error;
 
-	id = input_match_device(handler, dev);
-	if (!id)
-		return -ENODEV;
+    id = input_match_device(handler, dev);
+    if (!id)
+        return -ENODEV;
 
-	error = handler->connect(handler, dev, id);
-	if (error && error != -ENODEV)
-		pr_err("failed to attach handler %s to device %s, error: %d\n",
-		       handler->name, kobject_name(&dev->dev.kobj), error);
+    error = handler->connect(handler, dev, id);
+    if (error && error != -ENODEV)
+        pr_err("failed to attach handler %s to device %s, error: %d\n",
+               handler->name, kobject_name(&dev->dev.kobj), error);
 
-	return error;
+    return error;
 }
 ```
 {% endcode-tabs-item %}
@@ -251,38 +250,38 @@ static int input_attach_handler(struct input_dev *dev, struct input_handler *han
  * to connect and disconnect so we don't need to lock evdev_table here.
  */
 static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
-			 const struct input_device_id *id)
+             const struct input_device_id *id)
 {
-	struct evdev *evdev;
-	int minor;
-	int error;
+    struct evdev *evdev;
+    int minor;
+    int error;
 
-	for (minor = 0; minor < EVDEV_MINORS; minor++)
-		if (!evdev_table[minor])
-			break;
+    for (minor = 0; minor < EVDEV_MINORS; minor++)
+        if (!evdev_table[minor])
+            break;
 
-	evdev = kzalloc(sizeof(struct evdev), GFP_KERNEL);
-	...
-	dev_set_name(&evdev->dev, "event%d", minor);
-	evdev->exist = true;
-	evdev->minor = minor;
-	
-	evdev->handle.dev = input_get_device(dev);
-	evdev->handle.name = dev_name(&evdev->dev);
-	evdev->handle.handler = handler;
-	evdev->handle.private = evdev;
+    evdev = kzalloc(sizeof(struct evdev), GFP_KERNEL);
+    ...
+    dev_set_name(&evdev->dev, "event%d", minor);
+    evdev->exist = true;
+    evdev->minor = minor;
 
-	evdev->dev.devt = MKDEV(INPUT_MAJOR, EVDEV_MINOR_BASE + minor);
-	evdev->dev.class = &input_class;
-	evdev->dev.parent = &dev->dev;
-	evdev->dev.release = evdev_free;
-	device_initialize(&evdev->dev);
+    evdev->handle.dev = input_get_device(dev);
+    evdev->handle.name = dev_name(&evdev->dev);
+    evdev->handle.handler = handler;
+    evdev->handle.private = evdev;
 
-	error = input_register_handle(&evdev->handle);
-	error = evdev_install_chrdev(evdev);
-	error = device_add(&evdev->dev);
-	...
-	return 0;
+    evdev->dev.devt = MKDEV(INPUT_MAJOR, EVDEV_MINOR_BASE + minor);
+    evdev->dev.class = &input_class;
+    evdev->dev.parent = &dev->dev;
+    evdev->dev.release = evdev_free;
+    device_initialize(&evdev->dev);
+
+    error = input_register_handle(&evdev->handle);
+    error = evdev_install_chrdev(evdev);
+    error = device_add(&evdev->dev);
+    ...
+    return 0;
 }
 ```
 {% endcode-tabs-item %}
@@ -298,38 +297,38 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 ```c
 int input_register_handle(struct input_handle *handle)
 {
-	struct input_handler *handler = handle->handler;
-	struct input_dev *dev = handle->dev;
-	int error;
+    struct input_handler *handler = handle->handler;
+    struct input_dev *dev = handle->dev;
+    int error;
 
-	/*
-	 * We take dev->mutex here to prevent race with
-	 * input_release_device().
-	 */
-	error = mutex_lock_interruptible(&dev->mutex);
+    /*
+     * We take dev->mutex here to prevent race with
+     * input_release_device().
+     */
+    error = mutex_lock_interruptible(&dev->mutex);
 
-	/*
-	 * Filters go to the head of the list, normal handlers
-	 * to the tail.
-	 */
-	if (handler->filter)
-		list_add_rcu(&handle->d_node, &dev->h_list);
-	else
-		list_add_tail_rcu(&handle->d_node, &dev->h_list);
+    /*
+     * Filters go to the head of the list, normal handlers
+     * to the tail.
+     */
+    if (handler->filter)
+        list_add_rcu(&handle->d_node, &dev->h_list);
+    else
+        list_add_tail_rcu(&handle->d_node, &dev->h_list);
 
-	mutex_unlock(&dev->mutex);
-	/*
-	 * Since we are supposed to be called from ->connect()
-	 * which is mutually exclusive with ->disconnect()
-	 * we can't be racing with input_unregister_handle()
-	 * and so separate lock is not needed here.
-	 */
-	list_add_tail_rcu(&handle->h_node, &handler->h_list);
+    mutex_unlock(&dev->mutex);
+    /*
+     * Since we are supposed to be called from ->connect()
+     * which is mutually exclusive with ->disconnect()
+     * we can't be racing with input_unregister_handle()
+     * and so separate lock is not needed here.
+     */
+    list_add_tail_rcu(&handle->h_node, &handler->h_list);
 
-	if (handler->start)
-		handler->start(handle);
+    if (handler->start)
+        handler->start(handle);
 
-	return 0;
+    return 0;
 }
 ```
 
@@ -341,16 +340,16 @@ int input_register_handle(struct input_handle *handle)
 
 ```c
 struct evdev {
-	int open;
-	int minor;
-	struct input_handle handle;
-	wait_queue_head_t wait;
-	struct evdev_client __rcu *grab;
-	struct list_head client_list;
-	spinlock_t client_lock; /* protects client_list */
-	struct mutex mutex;
-	struct device dev;
-	bool exist;
+    int open;
+    int minor;
+    struct input_handle handle;
+    wait_queue_head_t wait;
+    struct evdev_client __rcu *grab;
+    struct list_head client_list;
+    spinlock_t client_lock; /* protects client_list */
+    struct mutex mutex;
+    struct device dev;
+    bool exist;
 };
 ```
 
@@ -362,106 +361,106 @@ USB 键盘下接 USB总线，这里我先忽略，上接 input 子系统，我�
 {% code-tabs-item title="drivers/hid/usbhid/usbkbd.c" %}
 ```c
 struct usb_kbd {
-	struct input_dev *dev;
-	struct usb_device *usbdev;
-	unsigned char old[8];
-	struct urb *irq, *led;
-	unsigned char newleds;
-	char name[128];
-	char phys[64];
+    struct input_dev *dev;
+    struct usb_device *usbdev;
+    unsigned char old[8];
+    struct urb *irq, *led;
+    unsigned char newleds;
+    char name[128];
+    char phys[64];
 
-	unsigned char *new;
-	struct usb_ctrlrequest *cr;
-	unsigned char *leds;
-	dma_addr_t new_dma;
-	dma_addr_t leds_dma;
+    unsigned char *new;
+    struct usb_ctrlrequest *cr;
+    unsigned char *leds;
+    dma_addr_t new_dma;
+    dma_addr_t leds_dma;
 };
 
 ......
 static int usb_kbd_probe(struct usb_interface *iface,
-			 const struct usb_device_id *id)
+             const struct usb_device_id *id)
 {
-	struct usb_device *dev = interface_to_usbdev(iface);
-	struct usb_host_interface *interface;
-	struct usb_endpoint_descriptor *endpoint;
-	struct usb_kbd *kbd;
-	struct input_dev *input_dev;
-	int i, pipe, maxp;
-	int error = -ENOMEM;
+    struct usb_device *dev = interface_to_usbdev(iface);
+    struct usb_host_interface *interface;
+    struct usb_endpoint_descriptor *endpoint;
+    struct usb_kbd *kbd;
+    struct input_dev *input_dev;
+    int i, pipe, maxp;
+    int error = -ENOMEM;
 
-	interface = iface->cur_altsetting;
+    interface = iface->cur_altsetting;
 
 
-	kbd = kzalloc(sizeof(struct usb_kbd), GFP_KERNEL);
-	input_dev = input_allocate_device();
-	if (!kbd || !input_dev)
-		goto fail1;
+    kbd = kzalloc(sizeof(struct usb_kbd), GFP_KERNEL);
+    input_dev = input_allocate_device();
+    if (!kbd || !input_dev)
+        goto fail1;
 
-	if (usb_kbd_alloc_mem(dev, kbd))
-		goto fail2;
+    if (usb_kbd_alloc_mem(dev, kbd))
+        goto fail2;
 
-	kbd->usbdev = dev;
-	kbd->dev = input_dev;
-	...
-	input_dev->name = kbd->name;
-	input_dev->phys = kbd->phys;
-	usb_to_input_id(dev, &input_dev->id);
-	input_dev->dev.parent = &iface->dev;
+    kbd->usbdev = dev;
+    kbd->dev = input_dev;
+    ...
+    input_dev->name = kbd->name;
+    input_dev->phys = kbd->phys;
+    usb_to_input_id(dev, &input_dev->id);
+    input_dev->dev.parent = &iface->dev;
 
-	input_set_drvdata(input_dev, kbd);
+    input_set_drvdata(input_dev, kbd);
 
-	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_LED) |
-		BIT_MASK(EV_REP);
-	input_dev->ledbit[0] = BIT_MASK(LED_NUML) | BIT_MASK(LED_CAPSL) |
-		BIT_MASK(LED_SCROLLL) | BIT_MASK(LED_COMPOSE) |
-		BIT_MASK(LED_KANA);
+    input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_LED) |
+        BIT_MASK(EV_REP);
+    input_dev->ledbit[0] = BIT_MASK(LED_NUML) | BIT_MASK(LED_CAPSL) |
+        BIT_MASK(LED_SCROLLL) | BIT_MASK(LED_COMPOSE) |
+        BIT_MASK(LED_KANA);
 
-	for (i = 0; i < 255; i++)
-		set_bit(usb_kbd_keycode[i], input_dev->keybit);
-	clear_bit(0, input_dev->keybit);
+    for (i = 0; i < 255; i++)
+        set_bit(usb_kbd_keycode[i], input_dev->keybit);
+    clear_bit(0, input_dev->keybit);
 
-	input_dev->event = usb_kbd_event;
-	input_dev->open = usb_kbd_open;
-	input_dev->close = usb_kbd_close;
-	...
-	error = input_register_device(kbd->dev);
-	...
-	return 0;
+    input_dev->event = usb_kbd_event;
+    input_dev->open = usb_kbd_open;
+    input_dev->close = usb_kbd_close;
+    ...
+    error = input_register_device(kbd->dev);
+    ...
+    return 0;
 }
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-usb 特有的部分都可以忽略，关键在于**分配了一个 input device 并注册了它**，这就是关键了，联系上面，这个设备肯定会和  evdev 驱动匹配，（**intput\_register\_device 同样会遍历驱动的链表，逐项比对id，最终连接双方**），然后建立一个新的 evdev 设备，分配一个 Input handle 结构，连接驱动和现在分配的这个设备。
+usb 特有的部分都可以忽略，关键在于**分配了一个 input device 并注册了它**，这就是关键了，联系上面，这个设备肯定会和 evdev 驱动匹配，（**intput\_register\_device 同样会遍历驱动的链表，逐项比对id，最终连接双方**），然后建立一个新的 evdev 设备，分配一个 Input handle 结构，连接驱动和现在分配的这个设备。
 
 然后，当我们按下按键的时候，就会触发中断，最终来到这里。这里我们还可以发现，input device 也有自己open close 它们会在某个地方被调用，先卖个关子。
 
 ```c
 static void usb_kbd_irq(struct urb *urb)
 {
-	struct usb_kbd *kbd = urb->context;
-	int i;
+    struct usb_kbd *kbd = urb->context;
+    int i;
 
-	switch (urb->status) {
-	case 0:			/* success */
-		break;
-	case -ECONNRESET:	/* unlink */
-	case -ENOENT:
-	case -ESHUTDOWN:
-		return;
-	/* -EPIPE:  should clear the halt */
-	default:		/* error */
-		goto resubmit;
-	}
+    switch (urb->status) {
+    case 0:            /* success */
+        break;
+    case -ECONNRESET:    /* unlink */
+    case -ENOENT:
+    case -ESHUTDOWN:
+        return;
+    /* -EPIPE:  should clear the halt */
+    default:        /* error */
+        goto resubmit;
+    }
 
-	for (i = 0; i < 8; i++)
-		input_report_key(kbd->dev, usb_kbd_keycode[i + 224], (kbd->new[0] >> i) & 1);
-	..
-	..
-	..
-	input_sync(kbd->dev);	
-	....
-}		
+    for (i = 0; i < 8; i++)
+        input_report_key(kbd->dev, usb_kbd_keycode[i + 224], (kbd->new[0] >> i) & 1);
+    ..
+    ..
+    ..
+    input_sync(kbd->dev);    
+    ....
+}
 ```
 
 有一些按键的继续按下，这个我们可以忽略，关键在于调用了一个 input\_report\_key
@@ -470,54 +469,54 @@ static void usb_kbd_irq(struct urb *urb)
 include/linux/input.h
 static inline void input_report_key(struct input_dev *dev, unsigned int code, int value)
 {
-	input_event(dev, EV_KEY, code, !!value);
+    input_event(dev, EV_KEY, code, !!value);
 }
 
 drivers/input/input.c
 void input_event(struct input_dev *dev,
-		 unsigned int type, unsigned int code, int value)
+         unsigned int type, unsigned int code, int value)
 {
-	unsigned long flags;
+    unsigned long flags;
 
-	if (is_event_supported(type, dev->evbit, EV_MAX)) {
+    if (is_event_supported(type, dev->evbit, EV_MAX)) {
 
-		spin_lock_irqsave(&dev->event_lock, flags);
-		add_input_randomness(type, code, value);
-		input_handle_event(dev, type, code, value);
-		spin_unlock_irqrestore(&dev->event_lock, flags);
-	}
+        spin_lock_irqsave(&dev->event_lock, flags);
+        add_input_randomness(type, code, value);
+        input_handle_event(dev, type, code, value);
+        spin_unlock_irqrestore(&dev->event_lock, flags);
+    }
 }
 
 drivers/input/input.c
 static void input_handle_event(struct input_dev *dev,
-			       unsigned int type, unsigned int code, int value)
+                   unsigned int type, unsigned int code, int value)
 {
-	int disposition = INPUT_IGNORE_EVENT;
+    int disposition = INPUT_IGNORE_EVENT;
 
-	switch (type) {
-	....
-	case EV_KEY:
-		if (is_event_supported(code, dev->keybit, KEY_MAX) &&
-		    !!test_bit(code, dev->key) != value) {
+    switch (type) {
+    ....
+    case EV_KEY:
+        if (is_event_supported(code, dev->keybit, KEY_MAX) &&
+            !!test_bit(code, dev->key) != value) {
 
-			if (value != 2) {
-				__change_bit(code, dev->key);
-				if (value)
-					input_start_autorepeat(dev, code);
-				else
-					input_stop_autorepeat(dev);
-			}
+            if (value != 2) {
+                __change_bit(code, dev->key);
+                if (value)
+                    input_start_autorepeat(dev, code);
+                else
+                    input_stop_autorepeat(dev);
+            }
 
-			disposition = INPUT_PASS_TO_HANDLERS;
-		}
-		break;
-	....
-	}
-	if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
-		dev->event(dev, type, code, value);
+            disposition = INPUT_PASS_TO_HANDLERS;
+        }
+        break;
+    ....
+    }
+    if ((disposition & INPUT_PASS_TO_DEVICE) && dev->event)
+        dev->event(dev, type, code, value);
 
-	if (disposition & INPUT_PASS_TO_HANDLERS)
-		input_pass_event(dev, type, code, value);
+    if (disposition & INPUT_PASS_TO_HANDLERS)
+        input_pass_event(dev, type, code, value);
 }
 对于 ENV_KEY 是可以传递给其他驱动的，就会来到 input_pass_event 了
 ```
@@ -531,70 +530,70 @@ static void input_handle_event(struct input_dev *dev,
  * dev->event_lock held and interrupts disabled.
  */
 static void input_pass_event(struct input_dev *dev,
-			     unsigned int type, unsigned int code, int value)
+                 unsigned int type, unsigned int code, int value)
 {
-	struct input_handler *handler;
-	struct input_handle *handle;
+    struct input_handler *handler;
+    struct input_handle *handle;
 
-	rcu_read_lock();
+    rcu_read_lock();
 
-	handle = rcu_dereference(dev->grab);
-	if (handle)
-		handle->handler->event(handle, type, code, value);
-	else {
-		bool filtered = false;
+    handle = rcu_dereference(dev->grab);
+    if (handle)
+        handle->handler->event(handle, type, code, value);
+    else {
+        bool filtered = false;
 
-		list_for_each_entry_rcu(handle, &dev->h_list, d_node) {
-			if (!handle->open)
-				continue;
-			handler = handle->handler;
-			if (!handler->filter) {
-				if (filtered)
-					break;
-				handler->event(handle, type, code, value);
-			} else if (handler->filter(handle, type, code, value))
-				filtered = true;
-		}
-	}
-	rcu_read_unlock();
+        list_for_each_entry_rcu(handle, &dev->h_list, d_node) {
+            if (!handle->open)
+                continue;
+            handler = handle->handler;
+            if (!handler->filter) {
+                if (filtered)
+                    break;
+                handler->event(handle, type, code, value);
+            } else if (handler->filter(handle, type, code, value))
+                filtered = true;
+        }
+    }
+    rcu_read_unlock();
 }
 ```
 
-调用 handler的 event 函数，最终就会来到， evdev\_event\(\) 
+调用 handler的 event 函数，最终就会来到， evdev\_event\(\)
 
 ```c
 static struct input_handler evdev_handler = {
-	.event		= evdev_event,
-	....
-}	
+    .event        = evdev_event,
+    ....
+}    
 
 /*
  * Pass incoming event to all connected clients.
  */
 static void evdev_event(struct input_handle *handle,
-			unsigned int type, unsigned int code, int value)
+            unsigned int type, unsigned int code, int value)
 {
-	struct evdev *evdev = handle->private;
-	struct evdev_client *client;
-	struct input_event event;
+    struct evdev *evdev = handle->private;
+    struct evdev_client *client;
+    struct input_event event;
 
-	do_gettimeofday(&event.time);
-	event.type = type;
-	event.code = code;
-	event.value = value;
+    do_gettimeofday(&event.time);
+    event.type = type;
+    event.code = code;
+    event.value = value;
 
-	rcu_read_lock();
+    rcu_read_lock();
 
-	client = rcu_dereference(evdev->grab);
-	if (client)
-		evdev_pass_event(client, &event);
-	else
-		list_for_each_entry_rcu(client, &evdev->client_list, node)
-			evdev_pass_event(client, &event);
+    client = rcu_dereference(evdev->grab);
+    if (client)
+        evdev_pass_event(client, &event);
+    else
+        list_for_each_entry_rcu(client, &evdev->client_list, node)
+            evdev_pass_event(client, &event);
 
-	rcu_read_unlock();
+    rcu_read_unlock();
 
-	wake_up_interruptible(&evdev->wait);
+    wake_up_interruptible(&evdev->wait);
 }
 ```
 
@@ -618,45 +617,45 @@ register_input_device
 
 int devtmpfs_create_node(struct device *dev)
 {
-	....
-	if (mode == 0)
-		mode = 0600;
-	if (is_blockdev(dev))
-		mode |= S_IFBLK;
-	else
-		mode |= S_IFCHR; // 重点就在于此，这个设备是字符设备
+    ....
+    if (mode == 0)
+        mode = 0600;
+    if (is_blockdev(dev))
+        mode |= S_IFBLK;
+    else
+        mode |= S_IFCHR; // 重点就在于此，这个设备是字符设备
 
-	curr_cred = override_creds(&init_cred);
+    curr_cred = override_creds(&init_cred);
 
-	err = vfs_path_lookup(dev_mnt->mnt_root, dev_mnt,
-			      nodename, LOOKUP_PARENT, &nd);
-	if (err == -ENOENT) {
-		create_path(nodename);
-		err = vfs_path_lookup(dev_mnt->mnt_root, dev_mnt,
-				      nodename, LOOKUP_PARENT, &nd);
-	}
-	if (err)
-		goto out;
+    err = vfs_path_lookup(dev_mnt->mnt_root, dev_mnt,
+                  nodename, LOOKUP_PARENT, &nd);
+    if (err == -ENOENT) {
+        create_path(nodename);
+        err = vfs_path_lookup(dev_mnt->mnt_root, dev_mnt,
+                      nodename, LOOKUP_PARENT, &nd);
+    }
+    if (err)
+        goto out;
 
-	dentry = lookup_create(&nd, 0);
-	if (!IS_ERR(dentry)) {
-		err = vfs_mknod(nd.path.dentry->d_inode,
-				dentry, mode, dev->devt);
-		if (!err) {
-			struct iattr newattrs;
+    dentry = lookup_create(&nd, 0);
+    if (!IS_ERR(dentry)) {
+        err = vfs_mknod(nd.path.dentry->d_inode,
+                dentry, mode, dev->devt);
+        if (!err) {
+            struct iattr newattrs;
 
-			/* fixup possibly umasked mode */
-			newattrs.ia_mode = mode;
-			newattrs.ia_valid = ATTR_MODE;
-			mutex_lock(&dentry->d_inode->i_mutex);
-			notify_change(dentry, &newattrs);
-			mutex_unlock(&dentry->d_inode->i_mutex);
+            /* fixup possibly umasked mode */
+            newattrs.ia_mode = mode;
+            newattrs.ia_valid = ATTR_MODE;
+            mutex_lock(&dentry->d_inode->i_mutex);
+            notify_change(dentry, &newattrs);
+            mutex_unlock(&dentry->d_inode->i_mutex);
 
-			/* mark as kernel-created inode */
-			dentry->d_inode->i_private = &dev_mnt;
-		}
-		dput(dentry);
-	}
+            /* mark as kernel-created inode */
+            dentry->d_inode->i_private = &dev_mnt;
+        }
+        dput(dentry);
+    }
 }
 ```
 
@@ -664,49 +663,49 @@ int devtmpfs_create_node(struct device *dev)
 
 ```c
 static const struct file_operations input_fops = {
-	.owner = THIS_MODULE,
-	.open = input_open_file,
-	.llseek = noop_llseek,
+    .owner = THIS_MODULE,
+    .open = input_open_file,
+    .llseek = noop_llseek,
 };
 
 static int input_open_file(struct inode *inode, struct file *file)
 {
-	struct input_handler *handler;
-	const struct file_operations *old_fops, *new_fops = NULL;
-	int err;
+    struct input_handler *handler;
+    const struct file_operations *old_fops, *new_fops = NULL;
+    int err;
 
-	err = mutex_lock_interruptible(&input_mutex);
-	if (err)
-		return err;
+    err = mutex_lock_interruptible(&input_mutex);
+    if (err)
+        return err;
 
-	/* No load-on-demand here? */
-	handler = input_table[iminor(inode) >> 5];
-	if (handler)
-		new_fops = fops_get(handler->fops);
+    /* No load-on-demand here? */
+    handler = input_table[iminor(inode) >> 5];
+    if (handler)
+        new_fops = fops_get(handler->fops);
 
-	mutex_unlock(&input_mutex);
+    mutex_unlock(&input_mutex);
 
-	/*
-	 * That's _really_ odd. Usually NULL ->open means "nothing special",
-	 * not "no device". Oh, well...
-	 */
-	if (!new_fops || !new_fops->open) {
-		fops_put(new_fops);
-		err = -ENODEV;
-		goto out;
-	}
+    /*
+     * That's _really_ odd. Usually NULL ->open means "nothing special",
+     * not "no device". Oh, well...
+     */
+    if (!new_fops || !new_fops->open) {
+        fops_put(new_fops);
+        err = -ENODEV;
+        goto out;
+    }
 
-	old_fops = file->f_op;
-	file->f_op = new_fops;
+    old_fops = file->f_op;
+    file->f_op = new_fops;
 
-	err = new_fops->open(inode, file);
-	if (err) {
-		fops_put(file->f_op);
-		file->f_op = fops_get(old_fops);
-	}
-	fops_put(old_fops);
+    err = new_fops->open(inode, file);
+    if (err) {
+        fops_put(file->f_op);
+        file->f_op = fops_get(old_fops);
+    }
+    fops_put(old_fops);
 out:
-	return err;
+    return err;
 }
 ```
 
@@ -716,53 +715,53 @@ out:
 
 ```c
 static const struct file_operations evdev_fops = {
-	.owner		= THIS_MODULE,
-	.read		= evdev_read,
-	.write		= evdev_write,
-	.poll		= evdev_poll,
-	.open		= evdev_open,
-	.release	= evdev_release,
-	.unlocked_ioctl	= evdev_ioctl,
+    .owner        = THIS_MODULE,
+    .read        = evdev_read,
+    .write        = evdev_write,
+    .poll        = evdev_poll,
+    .open        = evdev_open,
+    .release    = evdev_release,
+    .unlocked_ioctl    = evdev_ioctl,
 #ifdef CONFIG_COMPAT
-	.compat_ioctl	= evdev_ioctl_compat,
+    .compat_ioctl    = evdev_ioctl_compat,
 #endif
-	.fasync		= evdev_fasync,
-	.flush		= evdev_flush,
-	.llseek		= no_llseek,
+    .fasync        = evdev_fasync,
+    .flush        = evdev_flush,
+    .llseek        = no_llseek,
 };
 
 这个函数由input设备的注册那个 open调用，紧接着它调用了自己的open
 static int evdev_open(struct inode *inode, struct file *file)
 {
-	...
+    ...
 
-	error = evdev_open_device(evdev);
-	...
+    error = evdev_open_device(evdev);
+    ...
 }
 
 这里最关键的一点，又调用了 input架构提供的open函数
 static int evdev_open_device(struct evdev *evdev)
 {
-	int retval;
+    int retval;
 
-	retval = mutex_lock_interruptible(&evdev->mutex);
-	if (retval)
-		return retval;
+    retval = mutex_lock_interruptible(&evdev->mutex);
+    if (retval)
+        return retval;
 
-	if (!evdev->exist)
-		retval = -ENODEV;
-	else if (!evdev->open++) {
-		retval = input_open_device(&evdev->handle);
-		if (retval)
-			evdev->open--;
-	}
+    if (!evdev->exist)
+        retval = -ENODEV;
+    else if (!evdev->open++) {
+        retval = input_open_device(&evdev->handle);
+        if (retval)
+            evdev->open--;
+    }
 
-	mutex_unlock(&evdev->mutex);
-	return retval;
+    mutex_unlock(&evdev->mutex);
+    return retval;
 }
 ```
 
-这里读者知道，刚才再说 usb 键盘驱动那里我们卖了一关子，usb 设备对 input 设备注册了自己 open 函数，但是没说哪里调用。 
+这里读者知道，刚才再说 usb 键盘驱动那里我们卖了一关子，usb 设备对 input 设备注册了自己 open 函数，但是没说哪里调用。
 
 ```c
 /**
@@ -774,22 +773,22 @@ static int evdev_open_device(struct evdev *evdev)
  */
 int input_open_device(struct input_handle *handle)
 {
-	struct input_dev *dev = handle->dev;
-	int retval;
+    struct input_dev *dev = handle->dev;
+    int retval;
    ...
-	handle->open++;
+    handle->open++;
 
-	if (!dev->users++ && dev->open)
-		retval = dev->open(dev);
+    if (!dev->users++ && dev->open)
+        retval = dev->open(dev);
      // 就在这里调用了
    ....
  out:
-	mutex_unlock(&dev->mutex);
-	return retval;
+    mutex_unlock(&dev->mutex);
+    return retval;
 }
 ```
 
-这里设备的  open 函数，以 刚才 usb 键盘为例，就会来到 usb\_kbd\_open 了，这里与 USB 子系统有关，就不继续分析了。
+这里设备的 open 函数，以 刚才 usb 键盘为例，就会来到 usb\_kbd\_open 了，这里与 USB 子系统有关，就不继续分析了。
 
 ## Summary
 
@@ -819,5 +818,5 @@ evdev 的handler 最终调用了 input device 的 open 函数，其实内核的�
 * 为什么字符设备的open函数可以最终到达目标输入设备的open
 * 驱动的特点，即俩个链表，还有匹配的特点
 * 设备信息如何传递到监听它的 handler（利用设备的 h\_list）
-*  evdev 可以自由分配自己的 32 个minor
+* evdev 可以自由分配自己的 32 个minor
 

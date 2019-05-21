@@ -2,7 +2,7 @@
 description: CFS - 续  cgroup - 序
 ---
 
-# 进程组 - Task Group
+# Task Group - 进程组
 
 ## 序
 
@@ -16,17 +16,17 @@ description: CFS - 续  cgroup - 序
 
 上一节没有介绍调度类的知识，其实非常的简单，就是一个抽象和模块的思想，调度器被抽象为了一个抽象类，提供相关的接口给 schedule\(\) 调用，每一个进程也被抽象为了类，供具体（实例化）的调度类使用。
 
-![Graphical view of scheduling classes](../.gitbook/assets/image%20%2814%29.png)
+![Graphical view of scheduling classes](../.gitbook/assets/image%20%2816%29.png)
 
-其中我们关注的是  sched\_fair 这个类，_**schedule**_ 在每次调度就优先从 rt 中挑选新的进程，如果没有就切换别的 类，本质就是调用类实现的函数（地址）。
+其中我们关注的是 sched\_fair 这个类，_**schedule**_ 在每次调度就优先从 rt 中挑选新的进程，如果没有就切换别的 类，本质就是调用类实现的函数（地址）。
 
-![Structure hierarchy for tasks and the red-black tree](../.gitbook/assets/image%20%2829%29.png)
+![Structure hierarchy for tasks and the red-black tree](../.gitbook/assets/image%20%2814%29.png)
 
-上一节没有提到的一件事就是，所有任务抽象成一个 entity，然后以一个红黑树结构来存储，红黑树适合在动态性较强的情况下使用，Key 就是我们上节提到的  vruntime/fair\_clock，每次最左的一个节点就是下一个即将获得调度的 entity
+上一节没有提到的一件事就是，所有任务抽象成一个 entity，然后以一个红黑树结构来存储，红黑树适合在动态性较强的情况下使用，Key 就是我们上节提到的 vruntime/fair\_clock，每次最左的一个节点就是下一个即将获得调度的 entity
 
 均出自 [\_HERE\_](https://developer.ibm.com/tutorials/l-completely-fair-scheduler/) ，下图出自 [这儿](https://www.cnblogs.com/acool/p/6882644.html)
 
-![](../.gitbook/assets/image%20%2836%29.png)
+![structure of group scheduling](../.gitbook/assets/image%20%2810%29.png)
 
 ### 调度实体
 
@@ -40,25 +40,24 @@ description: CFS - 续  cgroup - 序
 
 ```c
 struct sched_entity {
-	struct load_weight	load;		/* for load-balancing */
-	struct rb_node		run_node;
-	unsigned int		on_rq;
+    struct load_weight    load;        /* for load-balancing */
+    struct rb_node        run_node;
+    unsigned int        on_rq;
 
-	u64			exec_start;
-	u64			sum_exec_runtime;
-	u64			vruntime;
-	u64			prev_sum_exec_runtime;
-	...
-	...
+    u64            exec_start;
+    u64            sum_exec_runtime;
+    u64            vruntime;
+    u64            prev_sum_exec_runtime;
+    ...
+    ...
 #ifdef CONFIG_FAIR_GROUP_SCHED
-	struct sched_entity	*parent;
-	/* rq on which this entity is (to be) queued: */
-	struct cfs_rq		*cfs_rq;
-	/* rq "owned" by this entity/group: */
-	struct cfs_rq		*my_q;
+    struct sched_entity    *parent;
+    /* rq on which this entity is (to be) queued: */
+    struct cfs_rq        *cfs_rq;
+    /* rq "owned" by this entity/group: */
+    struct cfs_rq        *my_q;
 #endif
 };
-
 ```
 
 省略了一些统计的字段，这些结构光看变量名就可略知一二了，当系统支持组调度的时候，entity 里面还有字段记录了几个重要的值。
@@ -72,30 +71,30 @@ struct sched_entity {
 ```c
 /* CFS-related fields in a runqueue */
 struct cfs_rq {
-	struct load_weight load;
-	unsigned long nr_running;
-	...
-	...
-	struct rb_root tasks_timeline;
-	/* 'curr' points to currently running entity on this cfs_rq.
-	 * It is set to NULL otherwise (i.e when none are currently running).
-	 */
-	struct sched_entity *curr;
-	...
+    struct load_weight load;
+    unsigned long nr_running;
+    ...
+    ...
+    struct rb_root tasks_timeline;
+    /* 'curr' points to currently running entity on this cfs_rq.
+     * It is set to NULL otherwise (i.e when none are currently running).
+     */
+    struct sched_entity *curr;
+    ...
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
-	struct rq *rq;	/* cpu runqueue to which this cfs_rq is attached */
+    struct rq *rq;    /* cpu runqueue to which this cfs_rq is attached */
 
-	/*
-	 * leaf cfs_rqs are those that hold tasks (lowest schedulable entity in
-	 * a hierarchy). Non-leaf lrqs hold other higher schedulable entities
-	 * (like users, containers etc.)
-	 *
-	 * leaf_cfs_rq_list ties together list of leaf cfs_rq's in a cpu. This
-	 * list is used during load balance.
-	 */
-	struct list_head leaf_cfs_rq_list;
-	struct task_group *tg;	/* group that "owns" this runqueue */
+    /*
+     * leaf cfs_rqs are those that hold tasks (lowest schedulable entity in
+     * a hierarchy). Non-leaf lrqs hold other higher schedulable entities
+     * (like users, containers etc.)
+     *
+     * leaf_cfs_rq_list ties together list of leaf cfs_rq's in a cpu. This
+     * list is used during load balance.
+     */
+    struct list_head leaf_cfs_rq_list;
+    struct task_group *tg;    /* group that "owns" this runqueue */
 #endif
 };
 ```
@@ -119,16 +118,16 @@ struct cfs_rq_demo {
 ```c
 struct task_group {
 #ifdef CONFIG_FAIR_CGROUP_SCHED
-	struct cgroup_subsys_state css;
+    struct cgroup_subsys_state css;
 #endif
-	/* schedulable entities of this group on each cpu */
-	struct sched_entity **se;
-	/* runqueue "owned" by this group on each cpu */
-	struct cfs_rq **cfs_rq;
-	unsigned long shares;
-	/* spinlock to serialize modification to shares */
-	spinlock_t lock;
-	struct rcu_head rcu;
+    /* schedulable entities of this group on each cpu */
+    struct sched_entity **se;
+    /* runqueue "owned" by this group on each cpu */
+    struct cfs_rq **cfs_rq;
+    unsigned long shares;
+    /* spinlock to serialize modification to shares */
+    spinlock_t lock;
+    struct rcu_head rcu;
 };
 ```
 
@@ -156,46 +155,45 @@ static struct sched_entity *init_sched_entity_p[NR_CPUS];
 static struct cfs_rq *init_cfs_rq_p[NR_CPUS];
 
 /* Default task group.
- *	Every task in system belong to this group at bootup.
+ *    Every task in system belong to this group at bootup.
  */
 struct task_group init_task_group = {
-	.se     = init_sched_entity_p,
-	.cfs_rq = init_cfs_rq_p,
+    .se     = init_sched_entity_p,
+    .cfs_rq = init_cfs_rq_p,
 };
-
 ```
 
 下面看一个图，自己简单画了一下。
 
-![](../.gitbook/assets/image%20%2820%29.png)
+![](../.gitbook/assets/image%20%2822%29.png)
 
 **红色箭头**是调度模块初始化的时候完成的，rq 是 Per CPU 变量，简单点理解就是一个数组，每个CPU都有一给自己的备份。
 
 ```c
 void __init sched_init(void)
 {
-			...
-			for_each_cpu(i)
-			{
-						struct cfs_rq *cfs_rq = &per_cpu(init_cfs_rq, i);
-						struct sched_entity *se =
-					 		&per_cpu(init_sched_entity, i);
+            ...
+            for_each_cpu(i)
+            {
+                        struct cfs_rq *cfs_rq = &per_cpu(init_cfs_rq, i);
+                        struct sched_entity *se =
+                             &per_cpu(init_sched_entity, i);
 
-						init_cfs_rq_p[i] = cfs_rq;
-						init_cfs_rq(cfs_rq, rq);
-						cfs_rq->tg = &init_task_group;
-						list_add(&cfs_rq->leaf_cfs_rq_list,
-							 &rq->leaf_cfs_rq_list);
+                        init_cfs_rq_p[i] = cfs_rq;
+                        init_cfs_rq(cfs_rq, rq);
+                        cfs_rq->tg = &init_task_group;
+                        list_add(&cfs_rq->leaf_cfs_rq_list,
+                             &rq->leaf_cfs_rq_list);
 
-						init_sched_entity_p[i] = se;
-						se->cfs_rq = &rq->cfs;
-						se->my_q = cfs_rq;
-						se->load.weight = init_task_group_load;
-						se->load.inv_weight =
-							 div64_64(1ULL<<32, init_task_group_load);
-						se->parent = NULL;
-						...
-			}
+                        init_sched_entity_p[i] = se;
+                        se->cfs_rq = &rq->cfs;
+                        se->my_q = cfs_rq;
+                        se->load.weight = init_task_group_load;
+                        se->load.inv_weight =
+                             div64_64(1ULL<<32, init_task_group_load);
+                        se->parent = NULL;
+                        ...
+            }
 }
 ```
 
@@ -211,23 +209,23 @@ void __init sched_init(void)
 /* runqueue "owned" by this group */
 static inline struct cfs_rq *group_cfs_rq(struct sched_entity *grp)
 {
-	return grp->my_q;
+    return grp->my_q;
 }
 
 static struct task_struct *pick_next_task_fair(struct rq *rq)
 {
-	struct cfs_rq *cfs_rq = &rq->cfs;
-	struct sched_entity *se;
+    struct cfs_rq *cfs_rq = &rq->cfs;
+    struct sched_entity *se;
 
-	if (unlikely(!cfs_rq->nr_running))
-		return NULL;
+    if (unlikely(!cfs_rq->nr_running))
+        return NULL;
 
-	do {
-		se = pick_next_entity(cfs_rq);
-		cfs_rq = group_cfs_rq(se);
-	} while (cfs_rq);
+    do {
+        se = pick_next_entity(cfs_rq);
+        cfs_rq = group_cfs_rq(se);
+    } while (cfs_rq);
 
-	return task_of(se);
+    return task_of(se);
 }
 ```
 
@@ -282,9 +280,9 @@ $$
 
 现在考虑，俩个组，一个组 A的 weight 为 1024，另一个组 B 的 weight 则是 512，各有一个进程a，b。那么当俩个进程都是就绪态的时候，占用的 CPU的比例是多少？
 
-答案是  a : b = 2：1（66.7%：33.3%），那假设还有一个进程 c不在任何组内，但是和这俩个组平级呢？
+答案是 a : b = 2：1（66.7%：33.3%），那假设还有一个进程 c不在任何组内，但是和这俩个组平级呢？
 
-![](../.gitbook/assets/image%20%2816%29.png)
+![](../.gitbook/assets/image%20%2818%29.png)
 
 答案是
 
@@ -305,12 +303,12 @@ $$
  */
 static u64 sched_slice(struct cfs_rq *cfs_rq, struct sched_entity *se)
 {
-	u64 slice = __sched_period(cfs_rq->nr_running);
+    u64 slice = __sched_period(cfs_rq->nr_running);
 
-	slice *= se->load.weight;
-	do_div(slice, cfs_rq->load.weight);
+    slice *= se->load.weight;
+    do_div(slice, cfs_rq->load.weight);
 
-	return slice;
+    return slice;
 }
 
 /*
@@ -320,14 +318,13 @@ static u64 sched_slice(struct cfs_rq *cfs_rq, struct sched_entity *se)
 static void
 check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	unsigned long ideal_runtime, delta_exec;
+    unsigned long ideal_runtime, delta_exec;
 
-	ideal_runtime = sched_slice(cfs_rq, curr);
-	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
-	if (delta_exec > ideal_runtime)
-		resched_task(rq_of(cfs_rq)->curr);
+    ideal_runtime = sched_slice(cfs_rq, curr);
+    delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
+    if (delta_exec > ideal_runtime)
+        resched_task(rq_of(cfs_rq)->curr);
 }
-
 ```
 
 正常情况下，是这样计算
@@ -342,7 +339,7 @@ $$
 
 那么继续以刚才的例子分析，一个 slice 中，a:b:c = 2:2:1，并且在这种情况下（ se得到的时间不均 ），它们增加 vruntime 相同，然后我们考虑，如果现在选择的是 B 组所代表的 se
 
-![](../.gitbook/assets/image%20%2819%29.png)
+![](../.gitbook/assets/image%20%2821%29.png)
 
 显然，由于 B 组的队列只有一个进程，那么理论上来说呢，那么以 B的角度来说（B也是一个队列，它也要判断自己下面的 se，是否消耗完自己的时间片 ），考虑刚才的公式，b 是不是直接得到了整个 slice？因为这个队列没有其余的进程和它分这一块蛋糕。
 
@@ -358,24 +355,24 @@ $$
  */
 static void task_tick_fair(struct rq *rq, struct task_struct *curr)
 {
-	struct cfs_rq *cfs_rq;
-	struct sched_entity *se = &curr->se;
+    struct cfs_rq *cfs_rq;
+    struct sched_entity *se = &curr->se;
 
-	for_each_sched_entity(se) {
-		cfs_rq = cfs_rq_of(se);
-		entity_tick(cfs_rq, se);
-	}
+    for_each_sched_entity(se) {
+        cfs_rq = cfs_rq_of(se);
+        entity_tick(cfs_rq, se);
+    }
 }
 
 static void entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	/*
-	 * Update run-time statistics of the 'current'.
-	 */
-	update_curr(cfs_rq);
+    /*
+     * Update run-time statistics of the 'current'.
+     */
+    update_curr(cfs_rq);
 
-	if (cfs_rq->nr_running > 1 || !sched_feat(WAKEUP_PREEMPT))
-		check_preempt_tick(cfs_rq, curr);
+    if (cfs_rq->nr_running > 1 || !sched_feat(WAKEUP_PREEMPT))
+        check_preempt_tick(cfs_rq, curr);
 }
 
 /*
@@ -384,15 +381,13 @@ static void entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 static void
 check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	unsigned long ideal_runtime, delta_exec;
+    unsigned long ideal_runtime, delta_exec;
 
-	ideal_runtime = sched_slice(cfs_rq, curr);
-	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
-	if (delta_exec > ideal_runtime)
-		resched_task(rq_of(cfs_rq)->curr);
+    ideal_runtime = sched_slice(cfs_rq, curr);
+    delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
+    if (delta_exec > ideal_runtime)
+        resched_task(rq_of(cfs_rq)->curr);
 }
-
-
 ```
 
 tick\_task\_fair 当每个周期出现的时候，就更新记账信息，注意，se 以及 se 的父母\( 即一个队列 \) 都会更新自己的 vruntime，刚才举例的时候，组 B 的 weight 512，而进程 b 没有说明，默认就是 1024，所以你会发现，**它们俩的 vruntime 增长的速度不一样**。
@@ -419,9 +414,9 @@ TG\( Task Group \) 是 CG（Control Group）的一个子部件，CG 的实现的
 
 如果非要把两者区分开，其实就是超类和基类的区别。之前我们所说的 TG，只包括了内核的任务分组的思想，最终是需要 CG 实现的完成的接口才能说完整。
 
-TG 是作为 CPU 的资源控制存在，也就是说对进程所在的组的 CPU 资源的控制由 TG 实现了核心模块，我们在讲解 CFS 的时候，已经知道通过 weight 来限制 CPU 资源，本质就是那儿~ 
+TG 是作为 CPU 的资源控制存在，也就是说对进程所在的组的 CPU 资源的控制由 TG 实现了核心模块，我们在讲解 CFS 的时候，已经知道通过 weight 来限制 CPU 资源，本质就是那儿~
 
-现在我们来关心的问题是，上层的提供的接口是如何与这个模块对接的。 
+现在我们来关心的问题是，上层的提供的接口是如何与这个模块对接的。
 
 ### CG 的调用链
 
@@ -438,14 +433,14 @@ CG 暴露给的接口给用户，通过 VFS 流程，来到了内核，最终和
 ```bash
 echo $$ >>  /mnt/point/mycg/tasks
 
-## 添加当前 shell 的 pid 到 mycg（cgroup）的那一组 
+## 添加当前 shell 的 pid 到 mycg（cgroup）的那一组
 ```
 
 {% hint style="info" %}
-mycg 是先前创建的一个 cgroup，当然在那时会创建一个 task\_group 并且抽象为 se 添加到与它同级的 cfs\_rq 中，也就是上一节提到的  cfs\_rq 的 “伪装”
+mycg 是先前创建的一个 cgroup，当然在那时会创建一个 task\_group 并且抽象为 se 添加到与它同级的 cfs\_rq 中，也就是上一节提到的 cfs\_rq 的 “伪装”
 {% endhint %}
 
-![~~~](../.gitbook/assets/image%20%2813%29.png)
+![~~~](../.gitbook/assets/image%20%2815%29.png)
 
 ## 总结
 
@@ -456,6 +451,4 @@ mycg 是先前创建的一个 cgroup，当然在那时会创建一个 task\_grou
 * [CFS group scheduling](https://lwn.net/Articles/240474/)
 * [Inside the Linux 2.6 Completely Fair Scheduler](https://developer.ibm.com/tutorials/l-completely-fair-scheduler/)
 * [Process Container](https://lwn.net/Articles/236038/)
-
-
 

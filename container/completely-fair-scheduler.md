@@ -21,7 +21,7 @@
 > The 2.4 kernel included a relatively simple scheduler that operated in O\(N\) time \(as it iterated over every task during a scheduling event\). The 2.4 scheduler divided time into epochs, and within each epoch, every task was allowed to execute up to its time slice. If a task did not use all of its time slice, then half of the remaining time slice was added to the new time slice to allow it to execute longer in the next epoch. The scheduler would simply iterate over the tasks, applying a goodness function \(metric\) to determine which task to execute next. Although this approach was relatively simple, it was relatively inefficient, lacked scalability, and was weak for real-time systems. It also lacked features to exploit new hardware architectures such as multi-core processors.
 >
 > The early 2.6 scheduler, called the _O\(1\) scheduler,_ was designed to solve many of the problems with the 2.4 scheduler—namely, the scheduler was not required to iterate the entire task list to identify the next task to schedule \(resulting in its name, _O\(1\),_ which meant that it was much more efficient and much more scalable\). The O\(1\) scheduler kept track of runnable tasks in a run queue \(actually, two run queues for each priority level—one for active and one for expired tasks\), which meant that to identify the task to execute next, the scheduler simply needed to dequeue the next task off the specific active per-priority run queue. The O\(1\) scheduler was much more scalable and incorporated interactivity metrics with numerous heuristics to determine whether tasks were I/O-bound or processor-bound. But the O\(1\) scheduler became unwieldy in the kernel. The large mass of code needed to calculate heuristics was fundamentally difficult to manage and, for the purist, lacked algorithmic substance.
-
+>
 > Given the issues facing the O\(1\) scheduler and other external pressures, something needed to change. That change came in the way of a kernel patch from Con Kolivas, with his Rotating Staircase Deadline Scheduler \(RSDL\), which included his earlier work on the staircase scheduler. The result of this work was a simply designed scheduler that incorporated fairness with bounded latency. Kolivas’ scheduler impressed many \(with calls to incorporate it into the current 2.6.21 mainline kernel\), so it was clear that a scheduler change was on the way. Ingo Molnar, the creator of the O\(1\) scheduler, then developed the CFS based around some of the ideas from Kolivas’ work. Let’s dig into the CFS to see how it operates at a high level.
 
 不了解也无伤大雅，因为进程算法都是与时俱进的，都是随着硬件的发展再做出具体的调整，在最早的 Linux，每个进程都拥有一个平等的时间片，但是根据一些优先级，来改变调度顺序，这些概念到如今都没有改变，唯一一直在变的就是，CPU 的性能一直在提升，所以单位时间执行的指令也飞速的提升，这也给了进程的时间片可以被**分割的更短**，所以看起来_**同时执行的进程**_变多了。
@@ -60,41 +60,41 @@
 
 ### weight weight weight
 
-谨以此小标题致敬 wuli 坤坤 😀。理解 CFS 的本质，有一个很关键的字段就是 **weight**，我们小学接触 一次函数 的时候表达式为 
+谨以此小标题致敬 wuli 坤坤 😀。理解 CFS 的本质，有一个很关键的字段就是 **weight**，我们小学接触 一次函数 的时候表达式为
 
-$$y = kx + b$$ 
+$$y = kx + b$$
 
 实际上在国外，一种常见的写法是
 
-$$y = wx + b$$ 
+$$y = wx + b$$
 
-这里的 $$w$$ 就是指代 weight   $$b$$ 指代 bias ，每一个进程（调度单元），都有一个 weight 字段，代表当前的进程的“ 重量 ”，非常的形象。nice 值和 weight 的转换如下。
+这里的 $$w$$ 就是指代 weight $$b$$ 指代 bias ，每一个进程（调度单元），都有一个 weight 字段，代表当前的进程的“ 重量 ”，非常的形象。nice 值和 weight 的转换如下。
 
-![nice-to-weight-convertion](../.gitbook/assets/image%20%2838%29.png)
+![nice-to-weight-convertion](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2838%29.png)
 
 为什么是这个规则！肯定有读者就好奇了，现在以 nice 0 和 nice 1 的两个进程为例子。
 
-那么  
+那么
 
-$$sum  = 1024 + 820 = 1844$$ 
+$$sum = 1024 + 820 = 1844$$
 
-则 $$1024/1844\approx0.555$$ 
+则 $$1024/1844\approx0.555$$
 
-再计算 $$820/1844 \approx 0.445$$ 
+再计算 $$820/1844 \approx 0.445$$
 
-现在我告诉你，这个比例就是俩进程占用 CPU  的比例
+现在我告诉你，这个比例就是俩进程占用 CPU 的比例
 
-两者 $$1024/820 = 1.248$$ 
+两者 $$1024/820 = 1.248$$
 
-而 $$1.248 / （1.248+1）\approx 0.55$$   $$1 / (1.248+1) \approx 0.45$$ 
+而 $$1.248 / （1.248+1）\approx 0.55$$ $$1 / (1.248+1) \approx 0.45$$
 
-如果现在知道 nice = 0  而 weight = 1024，则 nice = -1 的 weight
+如果现在知道 nice = 0 而 weight = 1024，则 nice = -1 的 weight
 
-$$weight = 1024 * 1.248 = 1277.952$$ 
+$$weight = 1024 * 1.248 = 1277.952$$
 
 所以 weight 的作用保证了一点，那就是当他们的数值相差 1 它们占用CPU的时间相差大概是 10%，这就是 weight 存在的作用。
 
-现在考虑我们有一个运行的队列，我们用一个字段来记录当前队列所有进程的总重，每当有新的进程进入或者出列，我们就更新它，假设这个字段为 _**total\_weight**_ 
+现在考虑我们有一个运行的队列，我们用一个字段来记录当前队列所有进程的总重，每当有新的进程进入或者出列，我们就更新它，假设这个字段为 _**total\_weight**_
 
 而如今我们选择了一个进程 $$t$$ 来执行，那么假设我们可承受的延迟是 100ms
 
@@ -190,7 +190,6 @@ the CPU for it to become completely fair and balanced.
 small detail: on 'ideal' hardware, the p->wait_runtime value would
 always be zero - no task would ever get 'out of balance' from the
 'ideal' share of CPU time.
-
 ```
 
 这个值记录的是一个平衡值，可以是正的也可以是负的，它代表了当前进程一个指标，就是能使它能得到自己那份资源的一个度量，如果是正的，意味着它应该得到更多，如果是负的，意味着它已经得到了超过了自己应该获得。
@@ -216,7 +215,7 @@ Fair Clock 在一定时间内其实没有区别，因为每个进程被调度就
 
 所以，设计的人就认为这个算法本质就是挑选最大的 wait\_runtime 的一个进程。现在回到刚才那个情况，当进程一个进程入列的时候，如果传入参数表明，它是由 **睡眠→就绪** 状态，那么我就得调整它的 wait\_runtime 了。
 
-首先，获取它的睡眠时间 $$delta = Fair\_Clock - sleep\_start\_fair $$ 然后计算它的应该得到多少补偿
+首先，获取它的睡眠时间 $$delta = Fair\_Clock - sleep\_start\_fair$$ 然后计算它的应该得到多少补偿
 
 $$
 wait\_runtime = \frac{delta*~t->weight}{1024}
@@ -239,7 +238,7 @@ CFS 直接摒弃了这些概念，它只负责记账，谁此刻最需要 CPU，
 1. 首先，把当前进程出列并入列，这一步是为了更新 Fair Clock/Key 等信息
 2. 然后判断当前 Fair Key 最小的是否仍为当前进程，如果不是，则做如下判断。
 3. 先计算候选进程和当前进程的 Fair Key 之差 $$delta$$ 
-4. 然后计算当前进程已经执行的时间 $$delta\_exe $$ 
+4. 然后计算当前进程已经执行的时间 $$delta\_exe$$ 
 5. 如果进程已经超过了当前当前进程应该执行的时间，那么则可以换出当前进程
 6. 否则，如果 $$delta$$ 小于一定的值，则不用换出。
 
@@ -251,7 +250,7 @@ CFS 直接摒弃了这些概念，它只负责记账，谁此刻最需要 CPU，
 
 颗粒度，描述的是一个进程执行的时间单位，其实很形象，颗粒度本来就是用来描述分割程度的，它的值越小，意味着进程的一段时间片就越小。它正确的理解应该是，描述一个最小单位的值，我感觉是这样 \(￣▽￣\)"
 
-> The CFS scheduler offers a single tunable: a "granularity" value which describes how quickly the scheduler will switch processes in order to maintain fairness. A low granularity gives more frequent switching; this setting translates to lower latency for interactive responses but can lower throughput slightly. Server systems may run better with a higher granularity value.         --[cite\_here](https://lwn.net/Articles/230574/)
+> The CFS scheduler offers a single tunable: a "granularity" value which describes how quickly the scheduler will switch processes in order to maintain fairness. A low granularity gives more frequent switching; this setting translates to lower latency for interactive responses but can lower throughput slightly. Server systems may run better with a higher granularity value. --[cite\_here](https://lwn.net/Articles/230574/)
 
 形象地说，granularity 就是指一个进程使用CPU之后应该执行的时间，我们之间都是用 slice 来表示的，其实是一回事。来看看，内核代码如何计算 gran
 
@@ -288,21 +287,21 @@ CFS 直接摒弃了这些概念，它只负责记账，谁此刻最需要 CPU，
 static long
 sched_granularity(struct cfs_rq *cfs_rq)
 {
-	unsigned int gran = sysctl_sched_latency;
-	unsigned int nr = cfs_rq->nr_running;
+    unsigned int gran = sysctl_sched_latency;
+    unsigned int nr = cfs_rq->nr_running;
 
-	if (nr > 1) {
-		gran = gran/nr - gran/nr/nr;
-		gran = max(gran, sysctl_sched_min_granularity);
-	}
+    if (nr > 1) {
+        gran = gran/nr - gran/nr/nr;
+        gran = max(gran, sysctl_sched_min_granularity);
+    }
 
-	return gran;
+    return gran;
 }
 ```
 
 简单的说呢，就是说这个进程，我现在给你CPU使用，但是 gran 时间过去之后，你就得归还了，因为我得保证系统的响应时间在一定的延迟内。
 
-刚才我们提到的 $$delta $$ 大于一个值的话就得把当前的进程换出了，这个值与它有关，假设计算出来的值为 gran 那么最终这个值是
+刚才我们提到的 $$delta$$ 大于一个值的话就得把当前的进程换出了，这个值与它有关，假设计算出来的值为 gran 那么最终这个值是
 
 $$
 niced\_granularity = \left\{ \begin{array}{ll}
@@ -321,7 +320,7 @@ $$
 > **What is schedule\(\) function?**  
 > It implements the Main Scheduler. It is defined in kernel/sched.c  
 > It is called from many points in the kernel to allocate the CPU to a process other than the currently active one  
-> Usually called after returning from system calls, if TIF\_NEED\_RESCHED is set for current task                -[cite\_here](https://oakbytes.wordpress.com/2012/07/03/cfs-and-periodic-scheduler/)
+> Usually called after returning from system calls, if TIF\_NEED\_RESCHED is set for current task -[cite\_here](https://oakbytes.wordpress.com/2012/07/03/cfs-and-periodic-scheduler/)
 
 ### 进程的孩子怎么办
 
@@ -329,29 +328,29 @@ $$
 
 考虑一个程序，每次我执行完一段时间 （大概是一个时间片），然后我 fork，让我子进程继续执行，接着我周而复始，那是不是这个进程永远霸占这 CPU 了，在之前的进程调度器都是通过让子进程得到父进程的时间片的一半，防止这种情况的发生。
 
- 2.6.23 是通过给 $$wait\_runtime$$ 赋值一个小于 0 的值，这样下一次更新  Fair Key 的时候，就会比 Fair Clock 走得快。**，如果一直有进程一直在 Fork子进程， 那么子进程永远得不到执行。**
+2.6.23 是通过给 $$wait\_runtime$$ 赋值一个小于 0 的值，这样下一次更新 Fair Key 的时候，就会比 Fair Clock 走得快。**，如果一直有进程一直在 Fork子进程， 那么子进程永远得不到执行。**
 
 ```c
 /*
-	 * Child runs first: we let it run before the parent
-	 * until it reschedules once. We set up the key so that
-	 * it will preempt the parent:
-	 */
-	se->fair_key = curr->fair_key -
-		niced_granularity(curr, sched_granularity(cfs_rq)) - 1;
-	
-	/*
-	 * The statistical average of wait_runtime is about
-	 * -granularity/2, so initialize the task with that:
-	 */
-	if (sysctl_sched_features & SCHED_FEAT_START_DEBIT)
-		se->wait_runtime = -(sched_granularity(cfs_rq) / 2);
+     * Child runs first: we let it run before the parent
+     * until it reschedules once. We set up the key so that
+     * it will preempt the parent:
+     */
+    se->fair_key = curr->fair_key -
+        niced_granularity(curr, sched_granularity(cfs_rq)) - 1;
+
+    /*
+     * The statistical average of wait_runtime is about
+     * -granularity/2, so initialize the task with that:
+     */
+    if (sysctl_sched_features & SCHED_FEAT_START_DEBIT)
+        se->wait_runtime = -(sched_granularity(cfs_rq) / 2);
 ```
 
 而 2.6.24 ，对于一个新的初始化的进程，我们当前管理的进程的最小的 Fair Key 的基础上，加上一个时间片的长度，_**子进程优先**_这个理念也得得到体现，所以我们还得比较 此时子进程的 Fair Key 和 父进程的 比较，保证子进程的 Fair Key 比父进程小，如果大了，则两者交换。在倒数第二节有提到。
 
 {% hint style="info" %}
-Fair Key 和 vruntime 是可以等价来理解的 
+Fair Key 和 vruntime 是可以等价来理解的
 {% endhint %}
 
 ### 为何选择早期的代码
@@ -400,7 +399,7 @@ $$
 
 如此循环5次，发现了 两者差大于25，此时 Fair Clock 为 130 = t1-&gt;Fair Key ，而 t2 仍是最初的 100，所以我们认为此时进程可以切换了。其实这里并不太好对吧，明明进程仍有 30ms 可以使用，所以后面 2.6.24.7 的代码，就已经是判断**它是否超过自己应该得到的时间**了，我觉得只有适合不适合，没有好与不好，上面这个判断其实可以让只有俩个进程的运行的CPU的延迟都很低，因为我们在保证了 100ms 延迟的前提下，又进一步**压缩**了进程的时间片。
 
-t1-&gt;fair\_key = 130;  t2-&gt;fair\_key = 100
+t1-&gt;fair\_key = 130; t2-&gt;fair\_key = 100
 
 我们假设5ms之后，schedule函数被调用，所以 t1-&gt;fair\_key = 135
 
@@ -418,21 +417,21 @@ $$
 
 注意： 现在 t1 的 Fair Key 已经比 t2 的要小了，但是并没有超过 gran，以及它能运行的时间 45ms
 
-下一个时间中断:  t2-&gt;Fair Key = 147 = Fair Clock， 两者差为 $$delta = 147 -135 = 12$$ 
+下一个时间中断: t2-&gt;Fair Key = 147 = Fair Clock， 两者差为 $$delta = 147 -135 = 12$$
 
-... t2-&gt;Fair Key = 153 = Fair Clock ， $$delta = 12 +6 = 18$$ 
+... t2-&gt;Fair Key = 153 = Fair Clock ， $$delta = 12 +6 = 18$$
 
 ... $$delta = 24$$ ，此时进程运行了 20ms
 
-... $$delta = 30$$ 
+... $$delta = 30$$
 
-...  $$delta = 36$$  进程运行了 30ms，t2-&gt;Fair Key = 171 = Fair Clock
+... $$delta = 36$$ 进程运行了 30ms，t2-&gt;Fair Key = 171 = Fair Clock
 
 轮到了 t1 假设， 5ms 之后 进程开始调度，则 t2-&gt;Fair Key = 177 = Fair Clock，进程运行了 35ms
 
 此时 CPU 占用比是 1:1 ， t1-&gt;gran = 25，所以 30ms 仍然会轮到 t2 运行
 
-注意到它们的比值其实就根据它们的重量得到，所以这样下去一直会是 1:1，虽然 
+注意到它们的比值其实就根据它们的重量得到，所以这样下去一直会是 1:1，虽然
 
 Fair Clock 增长速度不一样，但是两者能忍受的 差值（niced\_gran） 也不一样，
 
@@ -458,7 +457,7 @@ $$
 如果进程睡眠，那么 wait\_runtime 会变大，这样就走在了 Clock 的后面
 {% endhint %}
 
-举这个例子，就是让大家了解 CFS 的实质就是维护了一个 Fair Clock，以及调整公平后的每个进程都会有的  Fair Key。长时间未执行的进程必然马上得到 CPU 的使用权。
+举这个例子，就是让大家了解 CFS 的实质就是维护了一个 Fair Clock，以及调整公平后的每个进程都会有的 Fair Key。长时间未执行的进程必然马上得到 CPU 的使用权。
 
 实际的实现还有比较多的参数，但是太高深莫测了，但是我已经了解了实际的思想，就是维护一个公平的时钟，如果让我来实现，我会简单的判断当前的进程拥有多少的时间，如果没有超过，接着判断，如果当前已经不是最小的 Fair Key，我会让高特权的进程所能接受的差值大一些，而不是上面只让 nice = 0 的能获得最大的 niced\_gran，毕竟是特权进程，然后 wait\_runtime 设计为一个累计量，每当进程要被切换的时候更新，更新为它这次距离它应该执行的时间的差 对应的 一个权衡的值。
 
@@ -473,7 +472,7 @@ $$
 ## CFS 的实现 - 以 2.6.23 为例
 
 {% hint style="info" %}
- Fair Key  维护在一个红黑树，其实是什么结构都无所谓，这里不阐述了。
+Fair Key 维护在一个红黑树，其实是什么结构都无所谓，这里不阐述了。
 {% endhint %}
 
 这里不在进行不停的代码复制粘贴，我只会提一些关键的地方，也是自己最开始阅读的代码困惑的几个地方。
@@ -486,35 +485,35 @@ $$
  */
 static void task_tick_fair(struct rq *rq, struct task_struct *curr)
 {
-	struct cfs_rq *cfs_rq;
-	struct sched_entity *se = &curr->se;
+    struct cfs_rq *cfs_rq;
+    struct sched_entity *se = &curr->se;
 
-	for_each_sched_entity(se) {
-		cfs_rq = cfs_rq_of(se);
-		entity_tick(cfs_rq, se);
-	}
+    for_each_sched_entity(se) {
+        cfs_rq = cfs_rq_of(se);
+        entity_tick(cfs_rq, se);
+    }
 }
 
 static void entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	struct sched_entity *next;
+    struct sched_entity *next;
 
-	/*
-	 * Dequeue and enqueue the task to update its
-	 * position within the tree:
-	 */
-	dequeue_entity(cfs_rq, curr, 0);
-	enqueue_entity(cfs_rq, curr, 0);
+    /*
+     * Dequeue and enqueue the task to update its
+     * position within the tree:
+     */
+    dequeue_entity(cfs_rq, curr, 0);
+    enqueue_entity(cfs_rq, curr, 0);
 
-	/*
-	 * Reschedule if another task tops the current one.
-	 */
-	next = __pick_next_entity(cfs_rq);
-	if (next == curr)
-		return;
+    /*
+     * Reschedule if another task tops the current one.
+     */
+    next = __pick_next_entity(cfs_rq);
+    if (next == curr)
+        return;
 
-	__check_preempt_curr_fair(cfs_rq, next, curr,
-			sched_granularity(cfs_rq));
+    __check_preempt_curr_fair(cfs_rq, next, curr,
+            sched_granularity(cfs_rq));
 }
 
 /*
@@ -522,37 +521,37 @@ static void entity_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
  */
 static void
 __check_preempt_curr_fair(struct cfs_rq *cfs_rq, struct sched_entity *se,
-			  struct sched_entity *curr, unsigned long granularity)
+              struct sched_entity *curr, unsigned long granularity)
 {
-	s64 __delta = curr->fair_key - se->fair_key;
-	unsigned long ideal_runtime, delta_exec;
+    s64 __delta = curr->fair_key - se->fair_key;
+    unsigned long ideal_runtime, delta_exec;
 
-	/*
-	 * ideal_runtime is compared against sum_exec_runtime, which is
-	 * walltime, hence do not scale.
-	 */
-	ideal_runtime = max(sysctl_sched_latency / cfs_rq->nr_running,
-			(unsigned long)sysctl_sched_min_granularity);
+    /*
+     * ideal_runtime is compared against sum_exec_runtime, which is
+     * walltime, hence do not scale.
+     */
+    ideal_runtime = max(sysctl_sched_latency / cfs_rq->nr_running,
+            (unsigned long)sysctl_sched_min_granularity);
 
-	/*
-	 * If we executed more than what the latency constraint suggests,
-	 * reduce the rescheduling granularity. This way the total latency
-	 * of how much a task is not scheduled converges to
-	 * sysctl_sched_latency:
-	 */
-	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
-	if (delta_exec > ideal_runtime)
-		granularity = 0;
+    /*
+     * If we executed more than what the latency constraint suggests,
+     * reduce the rescheduling granularity. This way the total latency
+     * of how much a task is not scheduled converges to
+     * sysctl_sched_latency:
+     */
+    delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
+    if (delta_exec > ideal_runtime)
+        granularity = 0;
 
-	/*
-	 * Take scheduling granularity into account - do not
-	 * preempt the current task unless the best task has
-	 * a larger than sched_granularity fairness advantage:
-	 *
-	 * scale granularity as key space is in fair_clock.
-	 */
-	if (__delta > niced_granularity(curr, granularity))
-		resched_task(rq_of(cfs_rq)->curr);
+    /*
+     * Take scheduling granularity into account - do not
+     * preempt the current task unless the best task has
+     * a larger than sched_granularity fairness advantage:
+     *
+     * scale granularity as key space is in fair_clock.
+     */
+    if (__delta > niced_granularity(curr, granularity))
+        resched_task(rq_of(cfs_rq)->curr);
 }
 ```
 
@@ -568,35 +567,35 @@ __check_preempt_curr_fair(struct cfs_rq *cfs_rq, struct sched_entity *se,
  */
 static void task_new_fair(struct rq *rq, struct task_struct *p)
 {
-	struct cfs_rq *cfs_rq = task_cfs_rq(p);
-	struct sched_entity *se = &p->se, *curr = cfs_rq_curr(cfs_rq);
+    struct cfs_rq *cfs_rq = task_cfs_rq(p);
+    struct sched_entity *se = &p->se, *curr = cfs_rq_curr(cfs_rq);
 
-	sched_info_queued(p);
+    sched_info_queued(p);
 
-	update_curr(cfs_rq);
-	update_stats_enqueue(cfs_rq, se);
-	/*
-	 * Child runs first: we let it run before the parent
-	 * until it reschedules once. We set up the key so that
-	 * it will preempt the parent:
-	 */
-	se->fair_key = curr->fair_key -
-		niced_granularity(curr, sched_granularity(cfs_rq)) - 1;
-	/*
-	 * The first wait is dominated by the child-runs-first logic,
-	 * so do not credit it with that waiting time yet:
-	 */
-	if (sysctl_sched_features & SCHED_FEAT_SKIP_INITIAL)
-		se->wait_start_fair = 0;
+    update_curr(cfs_rq);
+    update_stats_enqueue(cfs_rq, se);
+    /*
+     * Child runs first: we let it run before the parent
+     * until it reschedules once. We set up the key so that
+     * it will preempt the parent:
+     */
+    se->fair_key = curr->fair_key -
+        niced_granularity(curr, sched_granularity(cfs_rq)) - 1;
+    /*
+     * The first wait is dominated by the child-runs-first logic,
+     * so do not credit it with that waiting time yet:
+     */
+    if (sysctl_sched_features & SCHED_FEAT_SKIP_INITIAL)
+        se->wait_start_fair = 0;
 
-	/*
-	 * The statistical average of wait_runtime is about
-	 * -granularity/2, so initialize the task with that:
-	 */
-	if (sysctl_sched_features & SCHED_FEAT_START_DEBIT)
-		se->wait_runtime = -(sched_granularity(cfs_rq) / 2);
+    /*
+     * The statistical average of wait_runtime is about
+     * -granularity/2, so initialize the task with that:
+     */
+    if (sysctl_sched_features & SCHED_FEAT_START_DEBIT)
+        se->wait_runtime = -(sched_granularity(cfs_rq) / 2);
 
-	__enqueue_entity(cfs_rq, se);
+    __enqueue_entity(cfs_rq, se);
 }
 ```
 
@@ -610,39 +609,39 @@ static void task_new_fair(struct rq *rq, struct task_struct *p)
 static inline void
 __update_curr(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	unsigned long delta, delta_exec, delta_fair, delta_mine;
-	struct load_weight *lw = &cfs_rq->load;
-	unsigned long load = lw->weight;
+    unsigned long delta, delta_exec, delta_fair, delta_mine;
+    struct load_weight *lw = &cfs_rq->load;
+    unsigned long load = lw->weight;
 
-	delta_exec = curr->delta_exec;
-	schedstat_set(curr->exec_max, max((u64)delta_exec, curr->exec_max));
+    delta_exec = curr->delta_exec;
+    schedstat_set(curr->exec_max, max((u64)delta_exec, curr->exec_max));
 
-	curr->sum_exec_runtime += delta_exec;
-	cfs_rq->exec_clock += delta_exec;
+    curr->sum_exec_runtime += delta_exec;
+    cfs_rq->exec_clock += delta_exec;
 
-	if (unlikely(!load))
-		return;
+    if (unlikely(!load))
+        return;
 
-	delta_fair = calc_delta_fair(delta_exec, lw);
-	delta_mine = calc_delta_mine(delta_exec, curr->load.weight, lw);
+    delta_fair = calc_delta_fair(delta_exec, lw);
+    delta_mine = calc_delta_mine(delta_exec, curr->load.weight, lw);
 
-	if (cfs_rq->sleeper_bonus > sysctl_sched_min_granularity) {
-		delta = min((u64)delta_mine, cfs_rq->sleeper_bonus);
-		delta = min(delta, (unsigned long)(
-			(long)sysctl_sched_runtime_limit - curr->wait_runtime));
-		cfs_rq->sleeper_bonus -= delta;
-		delta_mine -= delta;
-	}
+    if (cfs_rq->sleeper_bonus > sysctl_sched_min_granularity) {
+        delta = min((u64)delta_mine, cfs_rq->sleeper_bonus);
+        delta = min(delta, (unsigned long)(
+            (long)sysctl_sched_runtime_limit - curr->wait_runtime));
+        cfs_rq->sleeper_bonus -= delta;
+        delta_mine -= delta;
+    }
 
-	cfs_rq->fair_clock += delta_fair;
-	/*
-	 * We executed delta_exec amount of time on the CPU,
-	 * but we were only entitled to delta_mine amount of
-	 * time during that period (if nr_running == 1 then
-	 * the two values are equal)
-	 * [Note: delta_mine - delta_exec is negative]:
-	 */
-	add_wait_runtime(cfs_rq, curr, delta_mine - delta_exec);
+    cfs_rq->fair_clock += delta_fair;
+    /*
+     * We executed delta_exec amount of time on the CPU,
+     * but we were only entitled to delta_mine amount of
+     * time during that period (if nr_running == 1 then
+     * the two values are equal)
+     * [Note: delta_mine - delta_exec is negative]:
+     */
+    add_wait_runtime(cfs_rq, curr, delta_mine - delta_exec);
 }
 ```
 
@@ -666,14 +665,13 @@ __update_curr(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 static void
 check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 {
-	unsigned long ideal_runtime, delta_exec;
+    unsigned long ideal_runtime, delta_exec;
 
-	ideal_runtime = sched_slice(cfs_rq, curr);
-	delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
-	if (delta_exec > ideal_runtime)
-		resched_task(rq_of(cfs_rq)->curr);
+    ideal_runtime = sched_slice(cfs_rq, curr);
+    delta_exec = curr->sum_exec_runtime - curr->prev_sum_exec_runtime;
+    if (delta_exec > ideal_runtime)
+        resched_task(rq_of(cfs_rq)->curr);
 }
-
 ```
 
 sched\_slice 是根据 weight 获取进程应该运行的时间片长度，参考 Fair Clock那一节提到的计算方法，在正常的调度情况下进程都耗尽自己的 CPU 时间。
@@ -684,18 +682,18 @@ sched\_slice 是根据 weight 获取进程应该运行的时间片长度，参�
  */
 static void check_preempt_wakeup(struct rq *rq, struct task_struct *p)
 {
-	struct task_struct *curr = rq->curr;
-	struct cfs_rq *cfs_rq = task_cfs_rq(curr);
-	struct sched_entity *se = &curr->se, *pse = &p->se;
-	unsigned long gran;
-	...
+    struct task_struct *curr = rq->curr;
+    struct cfs_rq *cfs_rq = task_cfs_rq(curr);
+    struct sched_entity *se = &curr->se, *pse = &p->se;
+    unsigned long gran;
+    ...
 
-	gran = sysctl_sched_wakeup_granularity;  // default = 10ms
-	if (unlikely(se->load.weight != NICE_0_LOAD))
-		gran = calc_delta_fair(gran, &se->load);
+    gran = sysctl_sched_wakeup_granularity;  // default = 10ms
+    if (unlikely(se->load.weight != NICE_0_LOAD))
+        gran = calc_delta_fair(gran, &se->load);
 
-	if (pse->vruntime + gran < se->vruntime)
-		resched_task(curr);
+    if (pse->vruntime + gran < se->vruntime)
+        resched_task(curr);
 }
 ```
 
@@ -705,30 +703,30 @@ static void check_preempt_wakeup(struct rq *rq, struct task_struct *p)
 static void
 place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
 {
-	u64 vruntime;
-	...
-	...		
-	// for fork, initial = 1, else = 0
-	vruntime = cfs_rq->min_vruntime;
-	/*
-	 * The 'current' period is already promised to the current tasks,
-	 * however the extra weight of the new task will slow them down a
-	 * little, place the new task so that it fits in the slot that
-	 * stays open at the end.
-	 */
-	if (initial && sched_feat(START_DEBIT))
-		vruntime += sched_vslice_add(cfs_rq, se);
+    u64 vruntime;
+    ...
+    ...        
+    // for fork, initial = 1, else = 0
+    vruntime = cfs_rq->min_vruntime;
+    /*
+     * The 'current' period is already promised to the current tasks,
+     * however the extra weight of the new task will slow them down a
+     * little, place the new task so that it fits in the slot that
+     * stays open at the end.
+     */
+    if (initial && sched_feat(START_DEBIT))
+        vruntime += sched_vslice_add(cfs_rq, se);
 
-	if (!initial) {
-		/* sleeps upto a single latency don't count. */
-		if (sched_feat(NEW_FAIR_SLEEPERS) && entity_is_task(se))
-			vruntime -= sysctl_sched_latency;
+    if (!initial) {
+        /* sleeps upto a single latency don't count. */
+        if (sched_feat(NEW_FAIR_SLEEPERS) && entity_is_task(se))
+            vruntime -= sysctl_sched_latency;
 
-		/* ensure we never gain time by being placed backwards. */
-		vruntime = max_vruntime(se->vruntime, vruntime);
-	}
+        /* ensure we never gain time by being placed backwards. */
+        vruntime = max_vruntime(se->vruntime, vruntime);
+    }
 
-	se->vruntime = vruntime;
+    se->vruntime = vruntime;
 }
 ```
 

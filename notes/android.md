@@ -24,7 +24,7 @@ description: 参考书籍 《Android 系统源代码分析 》-  李俊
 
 所有的程序都离不开操作系统的支持，操作系统的接口都是以 C的规范暴露出来，所以其他语言必须得支持调用C/C++模块！Java当然也不例外，它利用了一个中间库的机制，建立一个 Java 可以识别的（规范的）中间库，然后中间库（C/C++）编写，又可以直接与C/C++的底层库交互。
 
-中间库的存在就是作为一个**承上启下**的作用，因为**Java有自己的规范，而C也有自己的规范**，那怎么办，好，找一个代理人，这个代理人就是 **JNI** 
+中间库的存在就是作为一个**承上启下**的作用，因为**Java有自己的规范，而C也有自己的规范**，那怎么办，好，找一个代理人，这个代理人就是 **JNI**
 
 我这里以安卓的设计的JNI为例子，安卓改进之后与传统的有点区别，但是本质估计都没有却别，只要理解原理就是，首先读者先理解一点，_**函数（方法）只是内存中一个代码段，我们只要知道了它的地址，往栈里放进相关的变量，那么这个函数不管是用什么语言编写的都是无所谓的，只要你遵循了这个函数调用所需的参数。**_
 
@@ -33,7 +33,6 @@ description: 参考书籍 《Android 系统源代码分析 》-  李俊
 {% code-tabs %}
 {% code-tabs-item title="Foo.java" %}
 ```java
-
 package test.test;
 
 public class Foo {
@@ -59,7 +58,6 @@ static void test_test_bar(JNIEnv * env ) {
 static void test_test_emm(JNIEnv * env, jobject thiz ) {
      // call xx(xx)
 }
-
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
@@ -81,7 +79,6 @@ typedef struct {
 在编写完 JNI 的中间函数之后，给每个函数填写一个结构体，用来实现映射
 
 ```c
-
 static JNINativeMethod gMethods [] = {
     {"bar", "()V", (void *)test_test_bar },
     {"foo", "()V", (void *)test_test_foo },
@@ -89,7 +86,7 @@ static JNINativeMethod gMethods [] = {
 
 
 int register_test_test_Foo(JNIEnv * env) {
-    
+
     return AndroidRuntime::registerNativeMethods(env, "test/test/Foo",
                             gMethods, NELEM(gMethods));    
 }
@@ -98,12 +95,11 @@ jint JNI_OnLoad( JavaVM * jvm, void * reserve ) {
     ...
      JNIEnv * env = NULL;
      vm->GetEnv( (void **)&env, JNI_VERSION_x_x);
-     
+
      register_test_test_Foo(env);      
-    
+
     ...
 }
-
 ```
 
 上述的函数省略了一些，在书本p70可以找到详细的，这里关键的一步就是调用了安卓提供了一个接口，将这个表和类结合了起来，其实很容易想到，无非就是 Java 类里面的函数（方法）修改了地址，其值为 gMethods 提供的表，当然 Java 不允许任意修改其函数地址，但是提供了这样一个接口，就好像**反射**的机制一样，在 C++ 很容易就能修改函数的地址，因为我们拿到指针以后就可以为所欲为了，私有的也不再是私有的。
@@ -116,13 +112,13 @@ JNI\_OnLoad 函数是 Java 加载运行库时自动调用的，这样的好处�
 其实了解函数的本质之后，那些动态库的原理，驱动加载的原理，虽然很复杂，但是本质其实就是一个指针的查找以及挂钩的过程
 {% endhint %}
 
-##  设备的访问
+## 设备的访问
 
 在linux，编写一个驱动是非常容易的，复杂的地方都在于怎么实现如何于设备正常交互，Linux提供的接口非常容易使用，访问的时候也是抽象为 字符，块以及网络设备，最终都以文件的形式展现出来，安卓在这方面也是类似，但做了一些修改。
 
 ### 安卓系统所使用的内核与传统内核的区别
 
-> “ 传统的Linux系统把对硬件的支持完全实现在内核空间中，即把对硬件的支持完全实现在硬件驱动模块中” 
+> “ 传统的Linux系统把对硬件的支持完全实现在内核空间中，即把对硬件的支持完全实现在硬件驱动模块中”
 >
 > “如果安卓系统像Linux系统一样，把对硬件的支持完全实现在硬件驱动模块中，那么必须把这些硬件驱动模块源代码公开，这样可能会损害移动设备厂商的利益，因为这相当于暴露了这些硬件的实现细节和参数”
 
@@ -159,7 +155,6 @@ Hardware Abstract Layer 名字的存在就暗示了它的作用就是要抽象�
 {% code-tabs %}
 {% code-tabs-item title="include / hardware / hardware.h" %}
 ```c
-
 /**
  * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
  * and the fields of this data structure must begin with hw_module_t
@@ -274,7 +269,7 @@ typedef struct hw_device_t {
 
 注意最上面的注释，所有的 HAL 模块，可以有自己的结构体，但是结构体的第一个域，必须是 struct hw\_module\_t 而且实例化的那个结构体的名字也必须是 HAL\_MODULE\_INFO\_SYM 这里的作用很明显，首先必须得是这个结构体开头，其实就是一种 继承的关系，而名字必须是规定的，原因在于，动态加载的时候，找到了这个变量名字所在的地方，就知道了模块的全部信息，这俩者是相辅相成的。
 
- struct hw\_module\_t 大部分都是存储版本信息，看注释就可以理解了，现在来看一个实际的例子。struct hw\_device\_t 设计同样如此，也是一种继承关系。
+struct hw\_module\_t 大部分都是存储版本信息，看注释就可以理解了，现在来看一个实际的例子。struct hw\_device\_t 设计同样如此，也是一种继承关系。
 
 ```c
 struct led_module_t {
@@ -305,23 +300,23 @@ static struct hw_module_methods_t led_module_methods = {
 static int led_device_open(const struct hw_module_t* module, const char* name,
         struct hw_device_t** device) 
 {
-	struct led_control_device_t *dev;
+    struct led_control_device_t *dev;
 
-	dev = (struct led_control_device_t *)malloc(sizeof(*dev));
-	memset(dev, 0, sizeof(*dev));
+    dev = (struct led_control_device_t *)malloc(sizeof(*dev));
+    memset(dev, 0, sizeof(*dev));
 
-	dev->common.tag =  HARDWARE_DEVICE_TAG;
-	dev->common.version = 0;
-	dev->common.module = module;
-	dev->common.close = led_device_close;
+    dev->common.tag =  HARDWARE_DEVICE_TAG;
+    dev->common.version = 0;
+    dev->common.module = module;
+    dev->common.close = led_device_close;
 
-	dev->set_on = led_on;
-	dev->set_off = led_off;
+    dev->set_on = led_on;
+    dev->set_off = led_off;
 
-	*device = &dev->common;
+    *device = &dev->common;
 
 success:
-	return 0;
+    return 0;
 }
 
 struct led_control_device_t {
@@ -368,17 +363,17 @@ public final class LedService extends ILedService.Stub {
 
     public LedService() {
         Log.i("LedService", "Go to get LED Stub...");
-	_init();
+    _init();
     }
 
     public boolean setOn(int led) {
         Log.i("MokoidPlatform", "LED On");
-	return _set_on(led);
+    return _set_on(led);
     }
 
     public boolean setOff(int led) {
         Log.i("MokoidPlatform", "LED Off");
-	return _set_off(led);
+    return _set_off(led);
     }
 
     private static native boolean _init();
@@ -399,12 +394,11 @@ interface ILedService
     boolean setOn(int led);
     boolean setOff(int led);
 }
-
 ```
 {% endcode-tabs-item %}
 {% endcode-tabs %}
 
-下面来看  JNI 的中间代码，也就是上面 加载的 libmokoid\_runtime.so
+下面来看 JNI 的中间代码，也就是上面 加载的 libmokoid\_runtime.so
 
 ```cpp
 struct led_control_device_t *sLedDevice = NULL;
@@ -423,7 +417,7 @@ static jboolean mokoid_init(JNIEnv *env, jclass clazz)
     if (hw_get_module(LED_HARDWARE_MODULE_ID, (const hw_module_t**)&module) == 0) {
         LOGI("LedService JNI: LED Stub found.");
         if (led_control_open(&module->common, &sLedDevice) == 0) {
-    	    LOGI("LedService JNI: Got Stub operations.");
+            LOGI("LedService JNI: Got Stub operations.");
             return 0;
         }
     }
@@ -432,7 +426,7 @@ static jboolean mokoid_init(JNIEnv *env, jclass clazz)
 }
 
 static const JNINativeMethod gMethods[] = {
-    { "_init",	  	"()Z",	(void *)mokoid_init },
+    { "_init",          "()Z",    (void *)mokoid_init },
     { "_set_on",        "(I)Z", (void *)mokoid_setOn },
     { "_set_off",       "(I)Z", (void *)mokoid_setOff },
 };
@@ -458,7 +452,6 @@ static jboolean mokoid_setOn(JNIEnv* env, jobject thiz, jint led)
 {% code-tabs %}
 {% code-tabs-item title="libhardware / master / . / hardware.c" %}
 ```c
-
 // "led.h"
 #define LED_HARDWARE_MODULE_ID "led"
 
@@ -517,7 +510,6 @@ public final class LedService extends ILedService.Stub {
 }
 
 咳咳，一个不专业的人员写的 Java 类 “声明”  方便大家看
-
 ```
 
 其实我们 new 一个 LedService 就可以访问硬件了，这是没错的，实际上已经链接在一起了，hw\_device\_t 可以 downcast 为 led\_control\_device\_t 的一个结构里面就有 set\_on set\_off 指针，即真正的操作。
@@ -539,8 +531,8 @@ public class LedSystemServer extends Service {
     public void onStart(Intent intent, int startId) {
         Log.i("LedSystemServer", "Start LedService...");
 
-	/* Please also see SystemServer.java for your interests. */
-	LedService ls = new LedService();
+    /* Please also see SystemServer.java for your interests. */
+    LedService ls = new LedService();
 
         try {
             ServiceManager.addService("led", ls);
@@ -605,7 +597,7 @@ public class LedTest extends Activity implements View.OnClickListener {
 
         Button btn = new Button(this);
         btn.setText("Click to turn LED 1 On");
-	    btn.setOnClickListener(this);
+        btn.setOnClickListener(this);
 
         setContentView(btn);
     }
@@ -613,7 +605,7 @@ public class LedTest extends Activity implements View.OnClickListener {
     public void onClick(View v) {
         // Get LedManager.
         if (mLedManager == null) {
-	        mLedManager = new LedManager();
+            mLedManager = new LedManager();
 
         /** Call methods in LedService via proxy object 
          * which is provided by LedManager. 
@@ -641,6 +633,4 @@ public class LedTest extends Activity implements View.OnClickListener {
 * [ ] 用户调用 new 一个 Manager
 
 注意 3，4，5 这一层我们称之为（Framework）框架层，一切为了用户的层，而 HAL 和 内核就很容易辨识了。
-
-
 
