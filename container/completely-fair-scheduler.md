@@ -70,7 +70,7 @@ $$y = wx + b$$
 
 这里的 $$w$$ 就是指代 weight   $$b$$ 指代 bias ，每一个进程（调度单元），都有一个 weight 字段，代表当前的进程的“ 重量 ”，非常的形象。nice 值和 weight 的转换如下。
 
-![nice-to-weight-convertion](.gitbook/assets/image%20%2826%29.png)
+![nice-to-weight-convertion](../.gitbook/assets/image%20%2838%29.png)
 
 为什么是这个规则！肯定有读者就好奇了，现在以 nice 0 和 nice 1 的两个进程为例子。
 
@@ -743,4 +743,13 @@ vruntime = max_vruntime(se->vruntime, vruntime);
 ## 末 - 亦是序
 
 花这么长的篇幅介绍，其实最终目的只有一个，理解为什么可以精确控制进程使用CPU的时间，这里是通过 weight 实现的，下一章控制组相关知识，主角终于来了。
+
+### References
+
+* [the plot thicken](https://lwn.net/Articles/230574/)
+* [FAQ style of CFS](https://oakbytes.wordpress.com/2012/06/06/linux-scheduler-introduction/)
+* [CFS - 调度](https://juejin.im/post/5a97c9025188255579180e43#heading-13)
+* [Inside the Linux 2.6 Completely Fair Scheduler](https://developer.ibm.com/tutorials/l-completely-fair-scheduler/)
+* [Linux kernel scheduler](https://helix979.github.io/jkoo/post/os-scheduler/)
+* [CFS design](http://people.redhat.com/mingo/cfs-scheduler/sched-design-CFS.txt)
 

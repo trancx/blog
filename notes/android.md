@@ -10,13 +10,13 @@ description: 参考书籍 《Android 系统源代码分析 》-  李俊
 
 ## 安卓的架构与JNI
 
-![architecture](.gitbook/assets/tu-pian%20%284%29.png)
+![architecture](../.gitbook/assets/tu-pian%20%284%29.png)
 
 这是很抽象的说法，我以Linux 的角度来说，首先内核就是 Linux 内核，运行的第一个用户程序之后就是安卓的部分了，但是安卓对内核也做了适应性的优化，然后关键的一点，后台有一个虚拟机JVM进程，运行上层的Java 程序，并且和下层的Native Libarary交互。
 
 因为内核的原生支持一定是 C/C++ ，但是上层的程序又想用 Java 编写，所以安卓系统的大量工作就在于一点，搭建一个中间库，我们称它为 JNI
 
-![](.gitbook/assets/tu-pian%20%287%29.png)
+![](../.gitbook/assets/tu-pian%20%287%29.png)
 
 比如最简单的一个 System.out.printl 函数，最终肯定是调用了 Linux 系统调用的 write 函数，但是 Java 如何和 C 交互呢，它们就不是一个时代的产物，在参考书里这么说的：
 
@@ -350,7 +350,7 @@ struct led_control_device_t {
 
 上层的存在就是想方设法让 Java 能够调用，第二节的讲述了 JNI 的原理，就是为了这种情况设计的。
 
-![ architecture](.gitbook/assets/tu-pian%20%281%29.png)
+![ architecture](../.gitbook/assets/tu-pian%20%281%29.png)
 
 上面这张图 有很多名词不懂，没关系我也不懂，来慢慢分析，现在我们到了 系统服务这一层了，直接甩代码，再理解。首先，为了上层 Java 程序可以调用，必须建立 jni 中间层。
 
