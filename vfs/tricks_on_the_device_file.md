@@ -353,5 +353,5 @@ bad_inode:
 
 最后以一张图结束本文。
 
-![](../.gitbook/assets/image%20%2814%29.png)
+![](../.gitbook/assets/image%20%2818%29.png)
 
