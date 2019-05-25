@@ -16,17 +16,17 @@ description: CFS - 续  cgroup - 序
 
 上一节没有介绍调度类的知识，其实非常的简单，就是一个抽象和模块的思想，调度器被抽象为了一个抽象类，提供相关的接口给 schedule\(\) 调用，每一个进程也被抽象为了类，供具体（实例化）的调度类使用。
 
-![Graphical view of scheduling classes](../.gitbook/assets/image%20%2850%29.png)
+![Graphical view of scheduling classes](../.gitbook/assets/image%20%2854%29.png)
 
 其中我们关注的是 sched\_fair 这个类，_**schedule**_ 在每次调度就优先从 rt 中挑选新的进程，如果没有就切换别的 类，本质就是调用类实现的函数（地址）。
 
-![Structure hierarchy for tasks and the red-black tree](../.gitbook/assets/image%20%2846%29.png)
+![Structure hierarchy for tasks and the red-black tree](../.gitbook/assets/image%20%2849%29.png)
 
 上一节没有提到的一件事就是，所有任务抽象成一个 entity，然后以一个红黑树结构来存储，红黑树适合在动态性较强的情况下使用，Key 就是我们上节提到的 vruntime/fair\_clock，每次最左的一个节点就是下一个即将获得调度的 entity
 
 均出自 [\_HERE\_](https://developer.ibm.com/tutorials/l-completely-fair-scheduler/) ，下图出自 [这儿](https://www.cnblogs.com/acool/p/6882644.html)
 
-![structure of group scheduling](../.gitbook/assets/image%20%2829%29.png)
+![structure of group scheduling](../.gitbook/assets/image%20%2831%29.png)
 
 ### 调度实体
 
@@ -165,7 +165,7 @@ struct task_group init_task_group = {
 
 下面看一个图，自己简单画了一下。
 
-![](../.gitbook/assets/image%20%2877%29.png)
+![](../.gitbook/assets/image%20%2882%29.png)
 
 **红色箭头**是调度模块初始化的时候完成的，rq 是 Per CPU 变量，简单点理解就是一个数组，每个CPU都有一给自己的备份。
 
@@ -201,7 +201,7 @@ void __init sched_init(void)
 
 看下图，这是一个嵌套的过程，当最高层的进程组\( init task group \)，选择了一个调度实体，发现它是一个队列，就 Down-cast\( se-&gt;my\_q \) 到 cfs\_rq，然后在这个队列选择，直到选择到的是一个进程（线程），然后进行进程上下文的切换。
 
-![](../.gitbook/assets/image%20%2821%29.png)
+![](../.gitbook/assets/image%20%2822%29.png)
 
 上一节提到，有一个关键点在于，如何识别一个 se 是一个队列，而不是一个进程，其实简单的判断它的 _**my\_q**_ 字段 便可以知道，如果非空，那么就说明是一个队列了。
 
@@ -247,7 +247,7 @@ per-CPU 变量就是全局变量，只是每个CPU有备份，相当于数组。
 
 为什么要分组，光说可能还记忆不深刻，举个例子
 
-![LWN.net](../.gitbook/assets/image%20%2827%29.png)
+![LWN.net](../.gitbook/assets/image%20%2828%29.png)
 
 现在假设进程分成了俩个组，Guests 组内有三个进程， Sys tasks 只有一个进程，也就是说最顶层的 cfs 队列中只有俩个 sched\_entity，再假设这俩个的 entity的 weight 相同，也就是说，俩个 entity 占用的 CPU 的时间是一样的。
 
@@ -282,7 +282,7 @@ $$
 
 答案是 a : b = 2：1（66.7%：33.3%），那假设还有一个进程 c不在任何组内，但是和这俩个组平级呢？
 
-![](../.gitbook/assets/image%20%2863%29.png)
+![](../.gitbook/assets/image%20%2867%29.png)
 
 答案是
 
@@ -339,7 +339,7 @@ $$
 
 那么继续以刚才的例子分析，一个 slice 中，a:b:c = 2:2:1，并且在这种情况下（ se得到的时间不均 ），它们增加 vruntime 相同，然后我们考虑，如果现在选择的是 B 组所代表的 se
 
-![](../.gitbook/assets/image%20%2876%29.png)
+![](../.gitbook/assets/image%20%2881%29.png)
 
 显然，由于 B 组的队列只有一个进程，那么理论上来说呢，那么以 B的角度来说（B也是一个队列，它也要判断自己下面的 se，是否消耗完自己的时间片 ），考虑刚才的公式，b 是不是直接得到了整个 slice？因为这个队列没有其余的进程和它分这一块蛋糕。
 
@@ -440,7 +440,7 @@ echo $$ >>  /mnt/point/mycg/tasks
 mycg 是先前创建的一个 cgroup，当然在那时会创建一个 task\_group 并且抽象为 se 添加到与它同级的 cfs\_rq 中，也就是上一节提到的 cfs\_rq 的 “伪装”
 {% endhint %}
 
-![~~~](../.gitbook/assets/image%20%2848%29.png)
+![~~~](../.gitbook/assets/image%20%2852%29.png)
 
 ## 总结
 

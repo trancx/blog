@@ -349,7 +349,7 @@ bad_inode:
 所以得出结论，/dev/sda 的内容和特定的文件系统无关（不由文件系统决定），但是一般文本文件和文件系统息息相关。
 {% endhint %}
 
-![&#x5757;&#x8BBE;&#x5907;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5305;&#x542B;&#x5173;&#x7CFB;](https://github.com/trancx/blog/tree/ea98d996e73674b9253759f52093008afb9c2c72/.gitbook/assets/image%20%2837%29.png)
+![&#x5757;&#x8BBE;&#x5907;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5305;&#x542B;&#x5173;&#x7CFB;](../.gitbook/assets/image%20%2844%29.png)
 
 最后以一张图结束本文。
 
