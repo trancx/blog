@@ -214,7 +214,7 @@ public interface WinIo extends Library {
 
 已经找不到了驱动了，如果此时我们把驱动文件移除，或者更换名字，初始化就会失败。
 
-![modify](../.gitbook/assets/image%20%2829%29.png)
+![modify](../.gitbook/assets/image%20%2830%29.png)
 
 修改相关代码
 
