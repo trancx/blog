@@ -70,7 +70,7 @@ $$y = wx + b$$
 
 这里的 $$w$$ 就是指代 weight $$b$$ 指代 bias ，每一个进程（调度单元），都有一个 weight 字段，代表当前的进程的“ 重量 ”，非常的形象。nice 值和 weight 的转换如下。
 
-![nice-to-weight-convertion](../.gitbook/assets/image%20%2884%29.png)
+![nice-to-weight-convertion](../.gitbook/assets/image%20%2887%29.png)
 
 为什么是这个规则！肯定有读者就好奇了，现在以 nice 0 和 nice 1 的两个进程为例子。
 
