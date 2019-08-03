@@ -16,7 +16,7 @@ description: CFS - 续  cgroup - 序
 
 上一节没有介绍调度类的知识，其实非常的简单，就是一个抽象和模块的思想，调度器被抽象为了一个抽象类，提供相关的接口给 schedule\(\) 调用，每一个进程也被抽象为了类，供具体（实例化）的调度类使用。
 
-![Graphical view of scheduling classes](../.gitbook/assets/image%20%2864%29.png)
+![Graphical view of scheduling classes](../.gitbook/assets/image%20%2865%29.png)
 
 其中我们关注的是 sched\_fair 这个类，_**schedule**_ 在每次调度就优先从 rt 中挑选新的进程，如果没有就切换别的 类，本质就是调用类实现的函数（地址）。
 
@@ -165,7 +165,7 @@ struct task_group init_task_group = {
 
 下面看一个图，自己简单画了一下。
 
-![](../.gitbook/assets/image%20%2893%29.png)
+![](../.gitbook/assets/image%20%2894%29.png)
 
 **红色箭头**是调度模块初始化的时候完成的，rq 是 Per CPU 变量，简单点理解就是一个数组，每个CPU都有一给自己的备份。
 
@@ -282,7 +282,7 @@ $$
 
 答案是 a : b = 2：1（66.7%：33.3%），那假设还有一个进程 c不在任何组内，但是和这俩个组平级呢？
 
-![](../.gitbook/assets/image%20%2878%29.png)
+![](../.gitbook/assets/image%20%2879%29.png)
 
 答案是
 
@@ -339,7 +339,7 @@ $$
 
 那么继续以刚才的例子分析，一个 slice 中，a:b:c = 2:2:1，并且在这种情况下（ se得到的时间不均 ），它们增加 vruntime 相同，然后我们考虑，如果现在选择的是 B 组所代表的 se
 
-![](../.gitbook/assets/image%20%2892%29.png)
+![](../.gitbook/assets/image%20%2893%29.png)
 
 显然，由于 B 组的队列只有一个进程，那么理论上来说呢，那么以 B的角度来说（B也是一个队列，它也要判断自己下面的 se，是否消耗完自己的时间片 ），考虑刚才的公式，b 是不是直接得到了整个 slice？因为这个队列没有其余的进程和它分这一块蛋糕。
 
@@ -440,7 +440,7 @@ echo $$ >>  /mnt/point/mycg/tasks
 mycg 是先前创建的一个 cgroup，当然在那时会创建一个 task\_group 并且抽象为 se 添加到与它同级的 cfs\_rq 中，也就是上一节提到的 cfs\_rq 的 “伪装”
 {% endhint %}
 
-![~~~](../.gitbook/assets/image%20%2862%29.png)
+![~~~](../.gitbook/assets/image%20%2863%29.png)
 
 ## 总结
 

@@ -99,13 +99,13 @@ output:  2 0
 
 还有一些文件操作函数，嗯，用的不多，一般就是 -f
 
-![](../.gitbook/assets/image%20%2861%29.png)
+![](../.gitbook/assets/image%20%2862%29.png)
 
 ### 输入输出重定向
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28118%29.png)
+![](../.gitbook/assets/image%20%28119%29.png)
 
 ```bash
  #pipe
