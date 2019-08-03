@@ -301,3 +301,19 @@ It is important to note that `[[ ]]` is not supported by all POSIX shells, howev
 
 ![](../.gitbook/assets/image%20%2832%29.png)
 
+对于数组，还有特性，这俩图均参考于[这儿](https://www.tldp.org/LDP/abs/html/index.html)
+
+```bash
+string=abcABC123ABCabc
+echo ${string[@]}               # abcABC123ABCabc
+echo ${string[*]}               # abcABC123ABCabc 
+echo ${string[0]}               # abcABC123ABCabc
+echo ${string[1]}               # No output!
+                                # Why?
+echo ${#string[@]}              # 1
+                                # One element in the array.
+                                # The string itself.
+
+# Thank you, Michael Zick, for pointing this out.
+```
+
