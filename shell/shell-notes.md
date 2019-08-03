@@ -85,7 +85,7 @@ output:  2 0
 
 ![](../.gitbook/assets/image%20%285%29.png)
 
-![](../.gitbook/assets/image%20%2850%29.png)
+![](../.gitbook/assets/image%20%2851%29.png)
 
 注意的是， Shell 也支持 && \|\| 
 
@@ -93,19 +93,19 @@ output:  2 0
   if [ -e myfile ] || [ -L myfile ]; then …
   ```
 
-![](../.gitbook/assets/image%20%2857%29.png)
+![](../.gitbook/assets/image%20%2858%29.png)
 
-![](../.gitbook/assets/image%20%2845%29.png)
+![](../.gitbook/assets/image%20%2846%29.png)
 
 还有一些文件操作函数，嗯，用的不多，一般就是 -f
 
-![](../.gitbook/assets/image%20%2860%29.png)
+![](../.gitbook/assets/image%20%2861%29.png)
 
 ### 输入输出重定向
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28115%29.png)
+![](../.gitbook/assets/image%20%28116%29.png)
 
 ```bash
  #pipe
@@ -298,4 +298,6 @@ It is important to note that `[[ ]]` is not supported by all POSIX shells, howev
 * Filename generation: treat each field as a glob, i.e. as a wildcard pattern, and replace it by the list of file names that match this pattern. If the pattern doesn't match any files, it is left unmodified. In our example, this results in the list containing `foo`, following by the list of files in the current directory, and finally `bar`. If the current directory is empty, the result is `foo`, `*`, `bar`.
 
 具体生成 image 在笔记中，`shell/`
+
+![](../.gitbook/assets/image%20%2832%29.png)
 

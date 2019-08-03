@@ -62,7 +62,7 @@ mov $1, [sp]
 
 上面的代码说明了 sp 永远指向的地方都是存放数据的地方，我们用 \[sp\] 访问的是存在数据的地方，当我们想加入新数据的话，也就是 push 操作，**必须得把 sp -= 4** 也就让它的地址指向一块当前没有数据的地方，然后在放入数据，这样 sp 再次指向了**最后一次放入的数据**。
 
-![push](../.gitbook/assets/image%20%2887%29.png)
+![push](../.gitbook/assets/image%20%2888%29.png)
 
 那么同理也可以知道，如果执行 pop 操作
 
@@ -83,7 +83,7 @@ pop:
 
 **pop** 之后，并不会请空无效数据\(data\)的值，stack pointer已经标示了当前有效数据就是在它之上的数据 其余数据是什么并不关心，所以在C中，一些局部变量，我们虽然在函数体之外，仍然可以访问到。
 
-![pop](../.gitbook/assets/image%20%28120%29.png)
+![pop](../.gitbook/assets/image%20%28121%29.png)
 
 最后总结一下，栈就是指数据取出和放入遵循**一定规则**的区域，没有什么神秘的地方。然后，sp 指针指向的是最后一个放入数据，如果没有放入数据就访问，会导致内存越界。
 
@@ -302,7 +302,7 @@ caller:
     ret
 ```
 
-![stack](../.gitbook/assets/image%20%28114%29.png)
+![stack](../.gitbook/assets/image%20%28115%29.png)
 
 调用 **函数之前 和 函数之后 的 sp 一定是一样**的，所以 sp 指向的一定是最后一次 push 导致 sp 下移的位置。
 
@@ -373,13 +373,13 @@ int main(void) {
 
 ![1](../.gitbook/assets/image%20%2825%29.png)
 
-![2](../.gitbook/assets/image%20%28121%29.png)
+![2](../.gitbook/assets/image%20%28122%29.png)
 
-![3](../.gitbook/assets/image%20%2895%29.png)
+![3](../.gitbook/assets/image%20%2896%29.png)
 
-![4](../.gitbook/assets/image%20%2899%29.png)
+![4](../.gitbook/assets/image%20%28100%29.png)
 
-![5](../.gitbook/assets/image%20%2837%29.png)
+![5](../.gitbook/assets/image%20%2838%29.png)
 
 ARM 就不一个一个分析了，关键在于参数直接用寄存器和桟传递的，然后返回值也是如此，然后局部变量的位置有所不同，其实就是**函数调用的规范**不一样。
 
@@ -456,7 +456,7 @@ main:
 
 给出调用的桟
 
-![](../.gitbook/assets/image%20%28100%29.png)
+![](../.gitbook/assets/image%20%28101%29.png)
 
 在x86当中，默认的**push**指令就是**Decreasing Before**模式，但是在Arm中没有原生，对于**push, pop**的指令，实际上还是会转换到**ldr，str**或者它的衍生指令。之所以出现STMDA的栈指令，就是为了操作方便，比如你存进去栈的时候是 Full Descending 那么取出来的时候就是 Empty Ascending
 
@@ -468,9 +468,9 @@ main:
 
 x86
 
-![](../.gitbook/assets/image%20%2859%29.png)
+![](../.gitbook/assets/image%20%2860%29.png)
 
 ARM
 
-![](../.gitbook/assets/image%20%2872%29.png)
+![](../.gitbook/assets/image%20%2873%29.png)
 
