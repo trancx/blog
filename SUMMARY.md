@@ -14,6 +14,10 @@
 * [Control Group - 控制组](container/cgroup.md)
 * [RB Tree - 红黑树](container/rbtree.md)
 
+## Utilities <a id="shell"></a>
+
+* [Shell 笔记](shell/shell-notes.md)
+
 ## Notes
 
 * [X86 ARM 下的函数调用规则](notes/x86-arm-call-convention.md)
