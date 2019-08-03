@@ -28,7 +28,7 @@ description: 之前的笔记
 
 考虑上图的左旋，其实就是黑色节点跑到了左子树，原来在右子树的节点，跑到了根节点。宏观上理解，就是**右子树的节点变少了，左子树的节点变多**。非要理解，就是旋转点变为左节点，而旋转点的右节点变为父母，其左子树附加到旋转点右子树。多复杂，就用宏观理解，其实就是平衡树，而子树的移动是理所当然的。
 
-![](../.gitbook/assets/image%20%28106%29.png)
+![](../.gitbook/assets/image%20%28107%29.png)
 
 这个也是如此，可能比较抽象，但最终的结果都是，旋转点到了子树，减少了一端的子树的高度，这就是旋转的实质。可能上面这幅图没有平衡的感觉，是的，实际操作，还要左旋一次，也就是左旋的图那样～
 
@@ -64,7 +64,7 @@ g 指代 grandparent，p 指代 parent，还有一个节点，即 uncle，这是
 
 #### 一次旋转即可的情况
 
-![](../.gitbook/assets/image%20%28111%29.png)
+![](../.gitbook/assets/image%20%28113%29.png)
 
 上面说明的是一个情况，即 uncle 是黑色，p 是红色，可以得到的一点，g 一定是**黑色**，因为只有黑色节点后面才可以跟红色节点。现在说明，这里右旋的原因，现在明显是 g-&gt;p-&gt;n 这一子树的树高会比 g-&gt;uncle 那一子树多（大多数正常情况下），首先，**这俩条路径的黑色节点一定相同**！这是RB tree 存在的意义，然后现在出现了连续俩个红色节点，违反了规则，其实就是 **树高** 已经不平衡了～
 
@@ -130,7 +130,7 @@ g 指代 grandparent，p 指代 parent，还有一个节点，即 uncle，这是
 
 #### 总结
 
-![](../.gitbook/assets/image%20%28119%29.png)
+![](../.gitbook/assets/image%20%28121%29.png)
 
 注意，旋转能解决的，必然是瞬间完成，只有 Uncle 是红色的时候，有可能一直向上传递，这样就有多次处理了。思考一个问题，黑色节点是如何增多的？
 
@@ -243,7 +243,7 @@ void rb_insert_color(struct rb_node *node, struct rb_root *root)
 
 ![](../.gitbook/assets/image%20%28105%29.png)
 
-![](../.gitbook/assets/image%20%28110%29.png)
+![](../.gitbook/assets/image%20%28111%29.png)
 
 当删除的节点是黑色的时候，就会出现 D-B 的情况，那么思想是什么呢，就是补偿，之前我们新插入一个节点，其实思想也是，只是补偿的是另外一个子树，想办法把节点移动到另外一个子树，来减少树高差，现在补偿的就是自己所在的子树了。
 
@@ -303,7 +303,7 @@ void rb_insert_color(struct rb_node *node, struct rb_root *root)
 
 这种情况，课件上说的很明白了，另外一侧已经没有红色节点可以拿了，只能够向上寻找，如果 P 正好是红色，那我们就不需要往上，否则 P 变为 D-B。这种情况，在实际代码编写的时候，是要先于 Case 1 判断，因为向上传递之后，可能就又是 Case 1（包括  Case 1.2 ）。
 
-![](../.gitbook/assets/image%20%28123%29.png)
+![](../.gitbook/assets/image%20%28126%29.png)
 
 #### Case 3 兄弟节点为红色
 
@@ -514,7 +514,7 @@ void rb_erase(struct rb_node *node, struct rb_root *root)
 
 实际代码的编写使得流程图的重要性得以体现，非常棒！
 
-![](../.gitbook/assets/image%20%28114%29.png)
+![](../.gitbook/assets/image%20%28116%29.png)
 
-![](../.gitbook/assets/image%20%28120%29.png)
+![](../.gitbook/assets/image%20%28123%29.png)
 

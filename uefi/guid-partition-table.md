@@ -82,5 +82,5 @@ Partition number (1-6): 1    # 查看 ESP 的信息
 部分的读者不习惯用命令行，其实 gdisk 有 UI 版本，叫 GParted 下载之后使用起来非常的方便，是一个很好用的管理软件。
 {% endhint %}
 
-![](../.gitbook/assets/image%20%28117%29.png)
+![](../.gitbook/assets/image%20%28119%29.png)
 

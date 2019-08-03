@@ -17,6 +17,7 @@
 ## Utilities <a id="shell"></a>
 
 * [Shell 笔记](shell/shell-notes.md)
+* [sed](shell/sed.md)
 
 ## Notes
 
