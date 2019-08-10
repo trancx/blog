@@ -93,19 +93,19 @@ output:  2 0
   if [ -e myfile ] || [ -L myfile ]; then …
   ```
 
-![](../.gitbook/assets/image%20%2858%29.png)
+![](../.gitbook/assets/image%20%2859%29.png)
 
 ![](../.gitbook/assets/image%20%2846%29.png)
 
 还有一些文件操作函数，嗯，用的不多，一般就是 -f
 
-![](../.gitbook/assets/image%20%2862%29.png)
+![](../.gitbook/assets/image%20%2864%29.png)
 
 ### 输入输出重定向
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28119%29.png)
+![](../.gitbook/assets/image%20%28121%29.png)
 
 ```bash
  #pipe

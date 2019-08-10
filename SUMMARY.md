@@ -14,11 +14,6 @@
 * [Control Group - 控制组](container/cgroup.md)
 * [RB Tree - 红黑树](container/rbtree.md)
 
-## Utilities <a id="shell"></a>
-
-* [Shell 笔记](shell/shell-notes.md)
-* [sed](shell/sed.md)
-
 ## Notes
 
 * [X86 ARM 下的函数调用规则](notes/x86-arm-call-convention.md)
@@ -27,6 +22,12 @@
 * [最近在玩WinIo遇到的问题](notes/howto-winio.md)
 * [什么是 crt\( on going\)](notes/what-is-crt.md)
 * [java 成长笔记](notes/java-cheng-chang-bi-ji.md)
+
+## Utilities <a id="shell"></a>
+
+* [Shell 笔记](shell/shell-notes.md)
+* [sed](shell/sed.md)
+* [hexdump](shell/hexdump.md)
 
 ## VFS
 
