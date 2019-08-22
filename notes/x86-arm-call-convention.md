@@ -54,8 +54,8 @@ push $1  // 把立即数 1 入栈
 
 也等同于 
 
-sub $4, sp  // sp = sp - 4;
-mov $1, [sp]
+sub $4, %sp  // sp = sp - 4;
+mov $1, (%sp)
 
 此时的 sp == 0x3fffffc
 ```
@@ -66,6 +66,10 @@ mov $1, [sp]
 
 那么同理也可以知道，如果执行 pop 操作
 
+{% hint style="info" %}
+sp 和 esp 的意义是一样的，读者可以暂时不要区分
+{% endhint %}
+
 ```c
 pop():
     int * p = (int *)sp;
@@ -73,10 +77,10 @@ pop():
     sp = sp - 4; // or  sp = (int)(--p);
 
 pop:
-    mov [sp], reg
-    sub $4, sp;
+    movl (%sp), %reg
+    subl $4, %esp;
 <=>
-    pop reg
+    popl %reg
 ```
 
 也就是说，先取数据在改变 sp
@@ -113,12 +117,12 @@ foo:
     push $0    
     push $1
     push $2
-    dec [sp+8]
-    inc [sp+4]
-    dec [sp]
+    decl (%esp+8)
+    incl (%esp+4)
+    decl (%esp)
     ...
     ...     
-    add $12, sp  // 此时桟顶数据已经不再包括i,j,k了
+    addl $12, %esp  // 此时桟顶数据已经不再包括i,j,k了
     ret          // 函数返回
 ```
 
@@ -151,12 +155,12 @@ foo:
     push $2
     ...
 // 参数入桟 拷贝了一遍局部变量 
-    mov [sp], reg  
-    push reg  //k入桟
-    mov [sp+4], reg
-    push reg //j入桟
-    mov [sp+8], reg
-    push reg //i入桟
+    movl (%esp), %reg  
+    push %reg  //k入桟
+    movl (%esp+4), %reg
+    push %reg //j入桟
+    mov (%sp+8), %reg
+    push %reg //i入桟
 // 调用函数
     call bar
     ...
@@ -213,13 +217,13 @@ ret 呢
 在所有函数入口和出口都有这样类似的指令
 
 function:
-    push   bp        // bp 也是全局的 要备份
-    mov    sp, bp  // bp = sp   
+    pushl   %ebp        // bp 也是全局的 要备份
+    movl    %esp, %ebp  // bp = sp   
     ...
     ...    中间局部变量的存在导致 sp 必然会改变
     ...
-    mov    bp, sp    // 让 sp = old_sp， 复原
-    pop    bp        // bp = old_bp
+    movl    %ebp, %esp    // 让 sp = old_sp， 复原
+    popl    %ebp        // bp = old_bp
     ret
 ```
 
@@ -239,8 +243,8 @@ sp 指向的是 最 后 一 个 入 栈 的 元 素
 即调用函数前，最后一个 自动入栈的  下 一 条 指 令 地  址
 
 ret::
-    pop  reg    // 把地址拿出来
-    jmp  reg    // goto 到目标地址
+    popl  %reg    // 把地址拿出来
+    jmp  %reg    // goto 到目标地址
 
     以上面的例子， reg  = 0xa0c
 ```
@@ -261,7 +265,7 @@ foo:
     我们上课会学到的 PC 指针，它就是本尊啦
 
 也就说 call 其实是这么做的
-    push  ip
+    pushl  %eip
     jmp    0xxx  目标代码的地址
 ```
 
@@ -283,22 +287,22 @@ void caller() {
 
 caller:
     // 准备阶段
-    push   bp
-    mov    sp, bp
+    pushl   %ebp
+    movl    %esp, %ebp
 
     // 开辟 ret 局部变量的空间
-    sub    $4, sp
+    subl    $4, %esp
 
     // 参数入栈
-    push   $1
+    pushl   $1
     call   func
 
     //  存储返回值到本地变量中
-    mov    ax, [sp+4]
+    movl    %eax, [sp+4]
 
    //  还原状态
-    mov    bp, sp
-    pop    bp
+    movl    %ebp, %esp
+    popl    %ebp
     ret
 ```
 
@@ -323,20 +327,20 @@ int func(int arg1) {
 
 func:
     // 准备阶段
-    push   bp
-    mov    sp, bp
+    pushl   %ebp
+    movl    %esp, %ebp
 
    // 开辟 local 局部变量的空间
-    sub    $4, sp
+    subl    $4, %esp
 
    //  [bp] 是 bp的备份， [bp+4]  是函数返回地址
-    inc  [bp+8] 
+    incl  (%ebp+8) 
 
-    mov  [bp+8], ax   // 返回值
+    movl  %(ebp+8), %eax   // 返回值
 
     //  还原状态
-    mov    bp, sp
-    pop    bp
+    movl    %ebp, %esp
+    popl    %ebp
     ret
 ```
 
