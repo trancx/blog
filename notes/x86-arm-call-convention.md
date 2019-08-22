@@ -77,7 +77,7 @@ pop():
     sp = sp - 4; // or  sp = (int)(--p);
 
 pop:
-    movl (%sp), %reg
+    movl (%esp), %reg
     subl $4, %esp;
 <=>
     popl %reg
