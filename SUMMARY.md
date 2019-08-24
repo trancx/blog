@@ -22,6 +22,7 @@
 * [最近在玩WinIo遇到的问题](notes/howto-winio.md)
 * [什么是 crt\( on going\)](notes/what-is-crt.md)
 * [java 成长笔记](notes/java-cheng-chang-bi-ji.md)
+* [OJ Tricks](notes/oj-tricks.md)
 
 ## Utilities <a id="shell"></a>
 
