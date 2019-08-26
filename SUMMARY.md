@@ -2,6 +2,7 @@
 
 * [Trance](README.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
+* [Interesting Tricks](interesting-tricks.md)
 
 ## Compiler
 
