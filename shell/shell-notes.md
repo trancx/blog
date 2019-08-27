@@ -85,7 +85,7 @@ output:  2 0
 
 ![](../.gitbook/assets/image%20%285%29.png)
 
-![](../.gitbook/assets/image%20%2851%29.png)
+![](../.gitbook/assets/image%20%2865%29.png)
 
 注意的是， Shell 也支持 && \|\| 
 
@@ -93,19 +93,19 @@ output:  2 0
   if [ -e myfile ] || [ -L myfile ]; then …
   ```
 
-![](../.gitbook/assets/image%20%2859%29.png)
+![](../.gitbook/assets/image%20%2875%29.png)
 
-![](../.gitbook/assets/image%20%2846%29.png)
+![](../.gitbook/assets/image%20%2857%29.png)
 
 还有一些文件操作函数，嗯，用的不多，一般就是 -f
 
-![](../.gitbook/assets/image%20%2864%29.png)
+![](../.gitbook/assets/image%20%2880%29.png)
 
 ### 输入输出重定向
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28121%29.png)
+![](../.gitbook/assets/image%20%28146%29.png)
 
 ```bash
  #pipe
@@ -299,7 +299,7 @@ It is important to note that `[[ ]]` is not supported by all POSIX shells, howev
 
 具体生成 image 在笔记中，`shell/`
 
-![](../.gitbook/assets/image%20%2832%29.png)
+![](../.gitbook/assets/image%20%2840%29.png)
 
 对于数组，还有特性，这俩图均参考于[这儿](https://www.tldp.org/LDP/abs/html/index.html)
 
