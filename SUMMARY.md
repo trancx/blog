@@ -4,6 +4,7 @@
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [Interesting Tricks](interesting-tricks.md)
 * [SMP（Pending\)](smp.md)
+* [Linux 中断架构](linux-irq-arch.md)
 
 ## Compiler
 
