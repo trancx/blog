@@ -288,6 +288,7 @@ asm(
 #define BB bb
 
 #define M_STR(A) #A
+// #define M_STR(...) #__VA_ARGS__  it's the same~
 #define M_STR_1(A) M_STR(A)
 
 #define M_CAT(B) M_STR(test##B)
@@ -303,4 +304,8 @@ STR_VAR(AA) == M_STR_1(AA) == "aa"
 CAT_VAR(BB) == M_CAT_1(BB) == "testbb"
 
 ```
+
+{% hint style="info" %}
+特殊的处理\# \#\# \_\_VA\_ARGS\_\_ 都是不会对宏进行展开处理的，所以想要使用这些功能同时又要展开宏，就要嵌套一层
+{% endhint %}
 
