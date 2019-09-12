@@ -280,3 +280,27 @@ asm(
 
 ### CPU id 
 
+### \# \#\# \_\_VA\_ARGS\_\_
+
+```c
+
+#define AA aa
+#define BB bb
+
+#define M_STR(A) #A
+#define M_STR_1(A) M_STR(A)
+
+#define M_CAT(B) M_STR(test##B)
+#define M_CAT_1(B) M_CAT(B)
+
+#define STR_VAR(...) M_STR_1(__VA_ARGS__)
+#define CAT_VAR(...) M_CAT_1(__VA_ARGS__)
+
+M_STR(AA) == "AA"
+M_CAT(BB)  == "testBB"
+
+STR_VAR(AA) == M_STR_1(AA) == "aa"
+CAT_VAR(BB) == M_CAT_1(BB) == "testbb"
+
+```
+
