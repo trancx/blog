@@ -238,6 +238,15 @@ ref\[3\] 建议 sed 用双引号，而不是单引号
 
 ![](../.gitbook/assets/image%20%2876%29.png)
 
+### 转义
+
+`/ /` 内的是原生字符串，照道理我们应该只需要  `\\` 即可，但是这里却非常奇怪，跟 `Java` 写这条语句一样了，需要 `4`个 `\`
+
+```bash
+$ echo "path\to\windows\file" | sed "s/\\\\/\//g"
+/path/to/windows/file
+```
+
 ## References
 
 [Sed](http://www.grymoire.com/Unix/Sed.html#uh-15b)
