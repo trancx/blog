@@ -123,6 +123,212 @@ smp.c 中 arm\_dt\_init\_cpu\_maps,  setup\_processors, 另外还有 smp\_operat
 也就是说，第一个上去的CPU，默认就是0，它唤醒的CPU，是我自己加+1，然后给你创建了 init 进程，那么  thread\_info-&gt;cpu  ,,,,,  it's up to the boot cpu~
 {% endhint %}
 
+### 具体的唤醒流程
+
+```c
+void __init smp_set_ops(struct smp_operations *ops)
+{
+	if (ops)
+		smp_ops = *ops;
+};
+...
+...
+int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
+{
+	if (smp_ops.smp_boot_secondary)
+		return smp_ops.smp_boot_secondary(cpu, idle);
+	return -ENOSYS;
+}
+
+```
+
+而在另外一处
+
+{% code-tabs %}
+{% code-tabs-item title="/arch/arm/kernel/setup.c" %}
+```c
+	if (is_smp()) {
+		if (!mdesc->smp_init || !mdesc->smp_init()) {
+			if (psci_smp_available())
+				smp_set_ops(&psci_smp_ops);
+			else if (mdesc->smp)
+				smp_set_ops(mdesc->smp);
+		}
+		smp_init_cpus();
+		smp_build_mpidr_hash();
+	}
+	...
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+{% code-tabs %}
+{% code-tabs-item title="/arch/arm/kernel/psci\_smp.c" %}
+```c
+
+static int psci_boot_secondary(unsigned int cpu, struct task_struct *idle)
+{
+	if (psci_ops.cpu_on)
+		return psci_ops.cpu_on(cpu_logical_map(cpu),
+					virt_to_idmap(&secondary_startup));
+	return -ENODEV;
+}
+
+const struct smp_operations psci_smp_ops __initconst = {
+	.smp_boot_secondary	= psci_boot_secondary,
+#ifdef CONFIG_HOTPLUG_CPU
+	.cpu_disable		= psci_cpu_disable,
+	.cpu_die		= psci_cpu_die,
+	.cpu_kill		= psci_cpu_kill,
+#endif
+};
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+
+
+```c
+static void __init psci_0_2_set_functions(void)
+{
+	...
+	psci_function_id[PSCI_FN_CPU_OFF] = PSCI_0_2_FN_CPU_OFF;
+	psci_ops.cpu_off = psci_cpu_off;
+
+	psci_function_id[PSCI_FN_CPU_ON] = PSCI_FN_NATIVE(0_2, CPU_ON);
+	psci_ops.cpu_on = psci_cpu_on;
+	...
+}
+
+int __init psci_dt_init(void)
+{
+	struct device_node *np;
+	const struct of_device_id *matched_np;
+	psci_initcall_t init_fn;
+
+	np = of_find_matching_node_and_match(NULL, psci_of_match, &matched_np);
+
+	if (!np || !of_device_is_available(np))
+		return -ENODEV;
+
+	init_fn = (psci_initcall_t)matched_np->data;
+	return init_fn(np);
+}
+```
+
+设备树初始化的，关注关键的几个
+
+```c
+static psci_fn *invoke_psci_fn;
+...
+
+static unsigned long __invoke_psci_fn_smc(unsigned long function_id,
+			unsigned long arg0, unsigned long arg1,
+			unsigned long arg2)
+{
+	struct arm_smccc_res res;
+
+	arm_smccc_smc(function_id, arg0, arg1, arg2, 0, 0, 0, 0, &res);
+	return res.a0;
+}
+
+static void set_conduit(enum psci_conduit conduit)
+{
+	switch (conduit) {
+	case PSCI_CONDUIT_HVC:
+		invoke_psci_fn = __invoke_psci_fn_hvc;
+		break;
+	case PSCI_CONDUIT_SMC:
+		invoke_psci_fn = __invoke_psci_fn_smc;
+		break;
+	default:
+		WARN(1, "Unexpected PSCI conduit %d\n", conduit);
+	}
+
+	psci_ops.conduit = conduit;
+}
+
+static int psci_cpu_on(unsigned long cpuid, unsigned long entry_point)
+{
+	int err;
+	u32 fn;
+
+	fn = psci_function_id[PSCI_FN_CPU_ON];
+	err = invoke_psci_fn(fn, cpuid, entry_point, 0);
+	return psci_to_linux_errno(err);
+}
+
+```
+
+所以关键就来到了这
+
+{% code-tabs %}
+{% code-tabs-item title="/include/linux/arm-smccc.h" %}
+```c
+/**
+ * __arm_smccc_hvc() - make HVC calls
+ * @a0-a7: arguments passed in registers 0 to 7
+ * @res: result values from registers 0 to 3
+ * @quirk: points to an arm_smccc_quirk, or NULL when no quirks are required.
+ *
+ * This function is used to make HVC calls following SMC Calling
+ * Convention.  The content of the supplied param are copied to registers 0
+ * to 7 prior to the HVC instruction. The return values are updated with
+ * the content from register 0 to 3 on return from the HVC instruction.  An
+ * optional quirk structure provides vendor specific behavior.
+ */
+asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
+			unsigned long a2, unsigned long a3, unsigned long a4,
+			unsigned long a5, unsigned long a6, unsigned long a7,
+			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
+
+#define arm_smccc_smc(...) __arm_smccc_smc(__VA_ARGS__, NULL)
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+应该可以猜测的到，是汇编实现的了
+
+{% code-tabs %}
+{% code-tabs-item title="/arch/arm/kernel/smccc-call.S" %}
+```c
+	/*
+	 * Wrap c macros in asm macros to delay expansion until after the
+	 * SMCCC asm macro is expanded.
+	 */
+	.macro SMCCC_SMC
+	__SMC(0)
+	.endm
+
+	.macro SMCCC instr
+UNWIND(	.fnstart)
+	mov	r12, sp
+	push	{r4-r7}
+UNWIND(	.save	{r4-r7})
+	ldm	r12, {r4-r7}   @ r0-r7 8 args
+	\instr
+	pop	{r4-r7}
+	ldr	r12, [sp, #(4 * 4)]  @ now r12 points at &res
+	stm	r12, {r0-r3}
+	bx	lr
+UNWIND(	.fnend)
+	.endm
+
+/*
+ * void smccc_smc(unsigned long a0, unsigned long a1, unsigned long a2,
+ *		  unsigned long a3, unsigned long a4, unsigned long a5,
+ *		  unsigned long a6, unsigned long a7, struct arm_smccc_res *res,
+ *		  struct arm_smccc_quirk *quirk)
+ */
+ENTRY(__arm_smccc_smc)
+	SMCCC SMCCC_SMC
+ENDPROC(__arm_smccc_smc)
+```
+{% endcode-tabs-item %}
+{% endcode-tabs %}
+
+`SMC` 是一个宏，分别针对 `Thumb` 和 `ARM` 下做了区分，这两者的指令集不一样。上面的操作想要理解，需要知道 `ARM Calling Convention`，我以前写过一篇只是简单的介绍了，但是最后的一张图便可以理解，当 `bl` 指令调用的时候，`sp` 指向的是 第五个参数的地址，理解这个，上述的操作就很自然了
+
 ## End
 
 P.S. 比较关键的几个地方在于，
@@ -132,6 +338,10 @@ P.S. 比较关键的几个地方在于，
 3. 具体措施比如 SGI，或者共享机制寄存器
 
 它们的启动的基址也是可以i确定的，这是非常重要的，这之后我们再来看看，总之 boot cpu给它设定的路线，thread\_info-&gt;cpu 在它出生之前都已经确定，所以它一上来就可以调用 smp\_processor\_id 作为自己在 per-CPU 变量的偏移，这是非常有意思的，然而提到的人似乎并不多。
+
+---- 补充于 2019年9月17日22:16:12
+
+实际上，在 ATF 作用下，唤醒 CPU 需要用 smc  exception call
 
 ## reference
 
