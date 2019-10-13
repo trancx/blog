@@ -3,7 +3,7 @@
 * [Trance](README.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [Interesting Tricks](interesting-tricks.md)
-* [SMP（Pending\)](smp.md)
+* [SMP 引导流程](smp.md)
 * [Linux 中断架构](linux-irq-arch.md)
 
 ## Compiler
