@@ -36,8 +36,7 @@ int main(int argc,   char *argv[] ) {
 
 现在是时候介绍这几个 object 文件了，这些 .o 文件都是可以被链接的，熟悉gcc的人肯定都不会陌生。其中， crt0 crti crtn 都是由C库提供，而 crtbegin crtend 由编译器提供，记住一点，编译器，C标准库都是操作系统专用的，不同的操作系统之间的实现是不同的，比如Windows下的C标准库实现起来和Linux不一样，编译器自然更不用说了。
 
-{% code-tabs %}
-{% code-tabs-item title="crt0.s" %}
+{% code title="crt0.s" %}
 ```c
 section .text
 
@@ -71,8 +70,7 @@ _start:
 	call exit
 .size _start, . - _start
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 这是一个简单的示例，能让我们了解，为什么会有这几个obj文件的出现，其中很关键的一步是什么呢，调用main函数，对于我们用户来说，不需要关心一个程序到底需要做什么样的初始化，我们只需要增加自己的功能，接着这些配套的环境就可以帮助我们将这个程序成功的运行。实际上，这就是一种**抽象**。
 

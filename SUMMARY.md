@@ -5,6 +5,7 @@
 * [Interesting Tricks](interesting-tricks.md)
 * [SMP 引导流程](smp.md)
 * [Linux 中断架构](linux-irq-arch.md)
+* [Thinking in Git](thinking-in-git.md)
 
 ## Compiler
 

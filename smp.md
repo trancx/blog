@@ -32,8 +32,7 @@ description: smp boot notes
 
 这几点的关键就不需要赘述了吧，提一提第一点是如何实现的吧
 
-{% code-tabs %}
-{% code-tabs-item title="/arch/arm/kernel/head.S" %}
+{% code title="/arch/arm/kernel/head.S" %}
 ```c
 __HEAD
 ENTRY(stext)
@@ -46,8 +45,7 @@ movs	r10, r5				@ invalid processor (r5=0)?
 add	pc, r10, #PROCINFO_INITFUNC
 ....
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 关键是 `procinfo` 这个结构，至于那个宏正是用 `offset_of` 计算出来的，`pc` 的指令现在正是在这个结构的 `__cpu_flush` 这里存放的指令是什么呢？关键得知道，`r5` 是怎么得到的
 
@@ -108,21 +106,18 @@ __lookup_processor_type_data:
 
 其实就是预先所有的结构都存在了一块区域，相当于数组，然后根据里面预先定义的值和处理器的标识符比较，如果相等就说明符合了，那么 `r5` 也就理所当然的指向对应的 `procinfo` 了，涉及到的两个变量是由链接脚本指定的
 
-{% code-tabs %}
-{% code-tabs-item title="vmlinux.lds.S" %}
+{% code title="vmlinux.lds.S" %}
 ```c
 . = ALIGN(4);							\
 	VMLINUX_SYMBOL(__proc_info_begin) = .;				\
 	*(.proc.info.init)						\
 	VMLINUX_SYMBOL(__proc_info_end) = .;
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 以 v7 处理器为例子，
 
-{% code-tabs %}
-{% code-tabs-item title="/arch/arm/mm/proc-v7.S" %}
+{% code title="/arch/arm/mm/proc-v7.S" %}
 ```c
 .section ".proc.info.init", #alloc, #execinstr
 
@@ -158,8 +153,7 @@ __v7_proc_info:
 	__v7_proc __v7_setup
 	.size	__v7_proc_info, . - __v7_proc_info
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 所以下面这条指令会跳转到`__v7_setup`这个地方
 
@@ -175,8 +169,7 @@ add	pc, r10, #PROCINFO_INITFUNC
 
 其他核心的唤醒其实在非常后，其实都是由创建的线程来完成初始化的，
 
-{% code-tabs %}
-{% code-tabs-item title="/init/main.c" %}
+{% code title="/init/main.c" %}
 ```c
 static int __ref kernel_init(void *unused)
 {
@@ -191,8 +184,7 @@ static noinline void __init kernel_init_freeable(void)
 	...
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 上面的函数一路往下就会来到
 
@@ -427,8 +419,7 @@ int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
 
 而在另外一处
 
-{% code-tabs %}
-{% code-tabs-item title="/arch/arm/kernel/setup.c" %}
+{% code title="/arch/arm/kernel/setup.c" %}
 ```c
 	if (is_smp()) {
 		if (!mdesc->smp_init || !mdesc->smp_init()) {
@@ -442,11 +433,9 @@ int __cpuinit boot_secondary(unsigned int cpu, struct task_struct *idle)
 	}
 	...
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
-{% code-tabs %}
-{% code-tabs-item title="/arch/arm/kernel/psci\_smp.c" %}
+{% code title="/arch/arm/kernel/psci\_smp.c" %}
 ```c
 
 static int psci_boot_secondary(unsigned int cpu, struct task_struct *idle)
@@ -466,8 +455,7 @@ const struct smp_operations psci_smp_ops __initconst = {
 #endif
 };
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 这里嵌套了几层
 
@@ -545,8 +533,7 @@ static int psci_cpu_on(unsigned long cpuid, unsigned long entry_point)
 
 来到了这
 
-{% code-tabs %}
-{% code-tabs-item title="/include/linux/arm-smccc.h" %}
+{% code title="/include/linux/arm-smccc.h" %}
 ```c
 /**
  * __arm_smccc_hvc() - make HVC calls
@@ -567,13 +554,11 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 
 #define arm_smccc_smc(...) __arm_smccc_smc(__VA_ARGS__, NULL)
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 应该可以猜测的到，是汇编实现的了
 
-{% code-tabs %}
-{% code-tabs-item title="/arch/arm/kernel/smccc-call.S" %}
+{% code title="/arch/arm/kernel/smccc-call.S" %}
 ```c
 	/*
 	 * Wrap c macros in asm macros to delay expansion until after the
@@ -607,8 +592,7 @@ ENTRY(__arm_smccc_smc)
 	SMCCC SMCCC_SMC
 ENDPROC(__arm_smccc_smc)
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 `SMC` 是一个宏，分别针对 `Thumb` 和 `ARM` 下做了区分，这两者的指令集不一样。上面的操作想要理解，需要知道 `ARM Calling Convention`，我以前写过一篇只是简单的介绍了，但是最后的一张图便可以理解，当 `bl` 指令调用的时候，`sp` 指向的是 第五个参数的地址，理解这个，上述的操作就很自然了
 
@@ -656,8 +640,7 @@ static uintptr_t std_svc_smc_handler(uint32_t smc_fid,
 }
 ```
 
-{% code-tabs %}
-{% code-tabs-item title="arm-trusted-firmware/lib/psci/psci\_main.c" %}
+{% code title="arm-trusted-firmware/lib/psci/psci\_main.c" %}
 ```c
 /*******************************************************************************
  * PSCI top level handler for servicing SMCs.
@@ -709,8 +692,7 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 		}
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 同一个文件中，还可以找到
 
@@ -744,8 +726,7 @@ int psci_cpu_on(u_register_t target_cpu,
 }
 ```
 
-{% code-tabs %}
-{% code-tabs-item title="/lib/psci/psci\_on.c" %}
+{% code title="/lib/psci/psci\_on.c" %}
 ```c
 /*******************************************************************************
  * Generic handler which is called to physically power on a cpu identified by
@@ -850,8 +831,7 @@ exit:
 	return rc;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 所以目前 ARMv8 情况下，对于 CPU 的唤醒，是由 ATF 实现的，本质应该与电源管理相关，有空这里接着补上
 

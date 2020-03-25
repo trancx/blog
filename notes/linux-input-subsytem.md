@@ -78,8 +78,7 @@ subsys_initcall(input_init);
 
 #### input设备的注册
 
-{% code-tabs %}
-{% code-tabs-item title="/drivers/input/input.c" %}
+{% code title="/drivers/input/input.c" %}
 ```c
 int input_register_handler(struct input_handler *handler)
 {
@@ -108,15 +107,13 @@ int input_register_handler(struct input_handler *handler)
     return retval;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 这个函数是内核暴露出来的驱动接口，供驱动模块调用，这里省略了错误的判断，为了更直观的显示它的作用。
 
 有一点读者肯定很好奇，为什么 minor 要除以32，得到了它的位置，也就是设备号的低5位是被忽略了，_**也就是说 一个输入驱动（input handler），可以处理32个设备**_。这里注意的 input handler 和 input handle 是俩个结构，最开始我也弄错了
 
-{% code-tabs %}
-{% code-tabs-item title="/include/linux/input.h" %}
+{% code title="/include/linux/input.h" %}
 ```c
 struct input_handler {
     void *private;
@@ -164,15 +161,13 @@ struct input_handle {
     struct list_head    h_node;
 };
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 所有的设计都是为了方便操作，驱动里面的这些函数大部分会被底层的设备调用，我们先以具体的一个输入设备来举例子。
 
 #### evdev 事件设备
 
-{% code-tabs %}
-{% code-tabs-item title="drivers/input/evdev.c" %}
+{% code title="drivers/input/evdev.c" %}
 ```c
 static int __init evdev_init(void)
 {
@@ -194,13 +189,11 @@ static const struct input_device_id evdev_ids[] = {
     { },            /* Terminating zero entry */
 };
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 id\_table 就是我们上面所说的和设备匹配的一个表，注释里说明了一个事实，就是_**所有的输入设备都会和这个evdev的驱动匹配**_。
 
-{% code-tabs %}
-{% code-tabs-item title="drivers/input/input.c" %}
+{% code title="drivers/input/input.c" %}
 ```c
 static const struct input_device_id *input_match_device(struct input_handler *handler,
                             struct input_dev *dev)
@@ -237,13 +230,11 @@ static int input_attach_handler(struct input_dev *dev, struct input_handler *han
     return error;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 所以最后会调用，evdev的 connect 函数
 
-{% code-tabs %}
-{% code-tabs-item title="drivers/input/evdev.c" %}
+{% code title="drivers/input/evdev.c" %}
 ```c
 /*
  * Create new evdev device. Note that input core serializes calls
@@ -284,8 +275,7 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
     return 0;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 也是省略了部分出错的判断，我们来看看关键的几个地方
 
@@ -357,8 +347,7 @@ struct evdev {
 
 USB 键盘下接 USB总线，这里我先忽略，上接 input 子系统，我们关注它的这一部分
 
-{% code-tabs %}
-{% code-tabs-item title="drivers/hid/usbhid/usbkbd.c" %}
+{% code title="drivers/hid/usbhid/usbkbd.c" %}
 ```c
 struct usb_kbd {
     struct input_dev *dev;
@@ -428,8 +417,7 @@ static int usb_kbd_probe(struct usb_interface *iface,
     return 0;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 usb 特有的部分都可以忽略，关键在于**分配了一个 input device 并注册了它**，这就是关键了，联系上面，这个设备肯定会和 evdev 驱动匹配，（**intput\_register\_device 同样会遍历驱动的链表，逐项比对id，最终连接双方**），然后建立一个新的 evdev 设备，分配一个 Input handle 结构，连接驱动和现在分配的这个设备。
 

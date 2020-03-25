@@ -84,7 +84,7 @@ grep match
 
 当然，grep 的递归查找还是很方便的~  `-n` 代表只会打印匹配了的那一行
 
-![](../.gitbook/assets/image%20%28139%29.png)
+![](../.gitbook/assets/image%20%28143%29.png)
 
 ```bash
 #!/bin/sh
@@ -163,7 +163,7 @@ echo "123 abc" | sed -r 's/[0-9]+/& &/'
 
 -r 是 extended 的正则模式，支持一些集合，总之，发现不支持了，就得思考是不是因为不支持的原因，对于 grep 是 -E
 
-![](../.gitbook/assets/image%20%28150%29.png)
+![](../.gitbook/assets/image%20%28154%29.png)
 
 #### \1 \2  to keep part of the pattern
 
@@ -230,13 +230,13 @@ sed -n 's/pattern/&/p' <file
 
 ## Cheat Sheet
 
-![](../.gitbook/assets/image%20%28133%29.png)
+![](../.gitbook/assets/image%20%28137%29.png)
 
 {% hint style="info" %}
 ref\[3\] 建议 sed 用双引号，而不是单引号
 {% endhint %}
 
-![](../.gitbook/assets/image%20%2876%29.png)
+![](../.gitbook/assets/image%20%2879%29.png)
 
 ### 转义
 

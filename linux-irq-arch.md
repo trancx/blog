@@ -116,8 +116,7 @@ struct irq_chip {
 
 比如在注册的时候加上一个范围即可，实际实现是通过注册 `irq_domain` 因为内核还实现了 `irq` 的虚拟化，比如每个控制器都支持 `0-255` 中断号，实际上会冲突，但是我们再加一层 `hw_irq` 到 `virt_irq` 的映射即可实现屏蔽，来看一个实际的例子
 
-{% code-tabs %}
-{% code-tabs-item title="/drivers/irqchip/irq-gic-v3.c" %}
+{% code title="/drivers/irqchip/irq-gic-v3.c" %}
 ```c
 gic_data.domain = irq_domain_add_tree(node, &gic_irq_domain_ops,
 					      &gic_data);
@@ -162,8 +161,7 @@ static int gic_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	return 0;
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 中断控制器注册函数，当内核分配中断号（也就是其它模块调用 `request_irq`  的时候），内核就找到了这个 `domain`，然后调用 `alloc` 函数，内核给它的只是一个虚拟中断号，内核只需要知道虚拟中断号对应哪个 `domain`，即可，然后 `virt_irq` 对应的 `hw_irq` 只需要中断控制器来维护。
 

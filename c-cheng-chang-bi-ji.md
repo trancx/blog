@@ -117,8 +117,7 @@ enum cgroup_subsys_id {
 
 ```
 
-{% code-tabs %}
-{% code-tabs-item title="linux/cgroup\_subsys.h" %}
+{% code title="linux/cgroup\_subsys.h" %}
 ```c
 #ifdef CONFIG_CPUSETS
 SUBSYS(cpuset)
@@ -148,6 +147,5 @@ SUBSYS(cpu_cgroup)
 SUBSYS(cpuacct)
 #endif
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 

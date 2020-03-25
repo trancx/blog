@@ -30,8 +30,7 @@ description: 参考书籍 《Android 系统源代码分析 》-  李俊
 
 所以对于Java程序，关键是什么呢，**得到自己类里Native关键字声明的方法的目标函数（库）地址**，
 
-{% code-tabs %}
-{% code-tabs-item title="Foo.java" %}
+{% code title="Foo.java" %}
 ```java
 package test.test;
 
@@ -43,11 +42,9 @@ public class Foo {
     public native void emm();
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
-{% code-tabs %}
-{% code-tabs-item title="test\_jni.c" %}
+{% code title="test\_jni.c" %}
 ```c
 中间JNI规范的代码
 
@@ -59,8 +56,7 @@ static void test_test_emm(JNIEnv * env, jobject thiz ) {
      // call xx(xx)
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 如果了解 C++ 实现机制的人肯定不觉得奇怪，就算是Java中声明的函数，到了C这里也一定是有参数，因为_**所谓的面向对象特性（多态性）都是通过指针实现**_的，对于静态函数，调用的时候没有具体的对象指针（C++的this），其实说明一点，这就是全局函数，而 env 参数，我的理解就是一个线程的标识符，每个线程有不同的值，因为**不同的线程会加载相同的动态库**，必须得有自己的备份，不能共享，比如那些全局数据，必须有自己的一份，如果有同学了解 mmap 机制，在实现映射的时候，有一个标识符是不能更改，一更改相关数据，马上就执行复制一份新的数据，从而不在共享（类似COW机制）。
 
@@ -152,8 +148,7 @@ Hardware Abstract Layer 名字的存在就暗示了它的作用就是要抽象�
 
 首先了解三个结构体。
 
-{% code-tabs %}
-{% code-tabs-item title="include / hardware / hardware.h" %}
+{% code title="include / hardware / hardware.h" %}
 ```c
 /**
  * Every hardware module must have a data structure named HAL_MODULE_INFO_SYM
@@ -264,8 +259,7 @@ typedef struct hw_device_t {
     int (*close)(struct hw_device_t* device);
 } hw_device_t;
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 注意最上面的注释，所有的 HAL 模块，可以有自己的结构体，但是结构体的第一个域，必须是 struct hw\_module\_t 而且实例化的那个结构体的名字也必须是 HAL\_MODULE\_INFO\_SYM 这里的作用很明显，首先必须得是这个结构体开头，其实就是一种 继承的关系，而名字必须是规定的，原因在于，动态加载的时候，找到了这个变量名字所在的地方，就知道了模块的全部信息，这俩者是相辅相成的。
 
@@ -384,8 +378,7 @@ public final class LedService extends ILedService.Stub {
 
 有人问 aidl 的作用，请出门维基，这里没有这么多篇幅啦，总之就是一个接口的设计。
 
-{% code-tabs %}
-{% code-tabs-item title="frameworks/base/core/java/mokoid/hardware/ILedService.aidl" %}
+{% code title="frameworks/base/core/java/mokoid/hardware/ILedService.aidl" %}
 ```java
 package mokoid.hardware;
 
@@ -395,8 +388,7 @@ interface ILedService
     boolean setOff(int led);
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 下面来看 JNI 的中间代码，也就是上面 加载的 libmokoid\_runtime.so
 
@@ -449,8 +441,7 @@ static jboolean mokoid_setOn(JNIEnv* env, jobject thiz, jint led)
 
 关键的一个函数， init（） 里面调用的 _**hw\_get\_module** ta_他的作用，是通过传进去的参数，找到模块的动态库的路径，然后 dlopen，然后就是我们在上一节说的 HAL 的作用里面的事情了。
 
-{% code-tabs %}
-{% code-tabs-item title="libhardware / master / . / hardware.c" %}
+{% code title="libhardware / master / . / hardware.c" %}
 ```c
 // "led.h"
 #define LED_HARDWARE_MODULE_ID "led"
@@ -475,8 +466,7 @@ int hw_get_module(const char *id, const struct hw_module_t **module)
 
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 假设上面根据规则 找到了 我们上面说的 led.so 最后的做的事情就是 dlopen
 
@@ -518,8 +508,7 @@ public final class LedService extends ILedService.Stub {
 
 所以正确的方案？就是所有的访问都调用一个接口，一个可以管理的接口。
 
-{% code-tabs %}
-{% code-tabs-item title="com/mokoid/LedTest/LedSystemServer.java" %}
+{% code title="com/mokoid/LedTest/LedSystemServer.java" %}
 ```java
 public class LedSystemServer extends Service {
 
@@ -543,15 +532,13 @@ public class LedSystemServer extends Service {
     }
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 这里实例化了一个对象，并把它注册在了 ServiceManager 上，一个静态的全局对象，以后所有的访问都经过它就好了。添加服务这种说法，其实就是一个_**进程间通信**_的幌子，大家都在操作系统里注册一个位置，然后别人访问的时候，操作系统就负责通信。进程间通信的手段很多，不过这里不是我们的重点。
 
 除了要有一个 服务，还需要有一个服务的管理者
 
-{% code-tabs %}
-{% code-tabs-item title="frameworks/base/core/java/mokoid/hardware/LedManager.java" %}
+{% code title="frameworks/base/core/java/mokoid/hardware/LedManager.java" %}
 ```java
 public class LedManager
 {
@@ -576,8 +563,7 @@ public class LedManager
     }
 }
 ```
-{% endcode-tabs-item %}
-{% endcode-tabs %}
+{% endcode %}
 
 如此这个管理者，每次跟系统的服务管理者拿到一个服务，同时又把它 upcast 到当时它注册到的基类，借此来调用。
 
