@@ -3,6 +3,7 @@
 * [Trance](README.md)
 * [C 成长笔记](c-cheng-chang-bi-ji.md)
 * [Interesting Tricks](interesting-tricks.md)
+* [GIC V3 中断控制器](gic-v3-irq-controller.md)
 * [SMP 引导流程](smp.md)
 * [Linux 中断架构](linux-irq-arch.md)
 * [Thinking in Git](thinking-in-git.md)

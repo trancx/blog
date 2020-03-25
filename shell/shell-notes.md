@@ -83,9 +83,9 @@ output:  2 0
 
 运算符比较复杂，需要的时候参考[菜鸟](https://www.runoob.com/linux/linux-shell-basic-operators.html)。
 
-![](../.gitbook/assets/image%20%285%29.png)
+![](../.gitbook/assets/image%20%286%29.png)
 
-![](../.gitbook/assets/image%20%2867%29.png)
+![](../.gitbook/assets/image%20%2877%29.png)
 
 注意的是， Shell 也支持 && \|\| 
 
@@ -93,19 +93,19 @@ output:  2 0
   if [ -e myfile ] || [ -L myfile ]; then …
   ```
 
-![](../.gitbook/assets/image%20%2878%29.png)
+![](../.gitbook/assets/image%20%2888%29.png)
 
-![](../.gitbook/assets/image%20%2859%29.png)
+![](../.gitbook/assets/image%20%2868%29.png)
 
 还有一些文件操作函数，嗯，用的不多，一般就是 -f
 
-![](../.gitbook/assets/image%20%2883%29.png)
+![](../.gitbook/assets/image%20%2894%29.png)
 
 ### 输入输出重定向
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28150%29.png)
+![](../.gitbook/assets/image%20%28169%29.png)
 
 ```bash
  #pipe
@@ -299,7 +299,7 @@ It is important to note that `[[ ]]` is not supported by all POSIX shells, howev
 
 具体生成 image 在笔记中，`shell/`
 
-![](../.gitbook/assets/image%20%2841%29.png)
+![](../.gitbook/assets/image%20%2847%29.png)
 
 对于数组，还有特性，这俩图均参考于[这儿](https://www.tldp.org/LDP/abs/html/index.html)
 
