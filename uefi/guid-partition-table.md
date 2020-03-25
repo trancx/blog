@@ -18,7 +18,7 @@ GPT，[ GUID Partition Table](https://en.wikipedia.org/wiki/GUID_Partition_Table
 
 GPT 真正开始于第二块扇区，也就是 LBA1，同时磁盘的最后一部分还有备份，是为防止出错的情况，首先我们来关注它的组成。一个头部，然后带128个分区，也就是说我们分区可以高达128个，还是不算逻辑分区的情况，在以前MBR的时候，早期 Windows 只能有4个物理分区，也是由于 MBR 的限制，当然现在肯定不存在这个问题了。
 
-![](../.gitbook/assets/image%20%28148%29.png)
+![](../.gitbook/assets/image%20%28152%29.png)
 
 上图是头部记录的一些关键信息，左-右 分别代表的是偏移量，长度和内容的解释。GPT 的头部记录了可用的逻辑块数量还有分区描述符的大小以及数量。也就是一些管理的信息，下面来看的关键的记录分区信息的结构，Partition Entry，怎么翻译我也不清楚，就叫分区描述符好了。
 
@@ -82,5 +82,5 @@ Partition number (1-6): 1    # 查看 ESP 的信息
 部分的读者不习惯用命令行，其实 gdisk 有 UI 版本，叫 GParted 下载之后使用起来非常的方便，是一个很好用的管理软件。
 {% endhint %}
 
-![](../.gitbook/assets/image%20%28170%29.png)
+![](../.gitbook/assets/image%20%28176%29.png)
 

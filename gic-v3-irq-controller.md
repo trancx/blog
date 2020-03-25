@@ -6,7 +6,7 @@
 
 ## Draft
 
-![](.gitbook/assets/image%20%28167%29.png)
+![](.gitbook/assets/image%20%28173%29.png)
 
 概述： TODO
 
@@ -44,11 +44,11 @@ Lower means Priority Higher
 
 `The maximum value of n is given by (32*(GICD_TYPER.ITLinesNumber+1) - 1). GICD_IROUTER registers where n=0 to 31 are reserved.`
 
-![](.gitbook/assets/image%20%28129%29.png)
+![](.gitbook/assets/image%20%28132%29.png)
 
 而其中的 Mode 字段
 
-![](.gitbook/assets/image%20%28157%29.png)
+![](.gitbook/assets/image%20%28161%29.png)
 
 32位的 ARM 使用的时候会有一个问题，那就是 AArch32 根本不存在 Aff3 字段，这个也是之后我需要面对的问题。
 
@@ -64,7 +64,7 @@ Lower means Priority Higher
 
 Affinity Enable 以及 Group Interrupt，理解了这俩个概念，才好掌握这个寄存器的作用
 
-![](.gitbook/assets/image%20%28115%29.png)
+![](.gitbook/assets/image%20%28116%29.png)
 
 ### GICR
 
@@ -82,7 +82,7 @@ Affinity Enable 以及 Group Interrupt，理解了这俩个概念，才好掌握
 
 ### GICC & System Register
 
-![](.gitbook/assets/image%20%28123%29.png)
+![](.gitbook/assets/image%20%28124%29.png)
 
 GICC 支持 MMIO 也支持 System Register 俩种方式，之所以把 CPU interface 集成进来，就是因为 CPU 是要经常访问这些寄存器的，所以速度也是一个重要的指标，具体看refs\[2\]，那里有一些解释。
 
@@ -104,7 +104,7 @@ GICC 支持 MMIO 也支持 System Register 俩种方式，之所以把 CPU inter
 
 GICC\_CTLR
 
-![](.gitbook/assets/image%20%28178%29.png)
+![](.gitbook/assets/image%20%28184%29.png)
 
 我们考虑的情况都是 GICD\_CTLR.DS == 1 情况，也就是关闭了 Secure 的模式
 
@@ -112,7 +112,7 @@ GICC\_CTLR
 
 此时比较重要的是几个位
 
-![](.gitbook/assets/image%20%28104%29.png)
+![](.gitbook/assets/image%20%28105%29.png)
 
 ![](.gitbook/assets/image%20%281%29.png)
 

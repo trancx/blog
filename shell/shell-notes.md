@@ -105,7 +105,7 @@ output:  2 0
 
 说明的是在脚本中的重定向，
 
-![](../.gitbook/assets/image%20%28169%29.png)
+![](../.gitbook/assets/image%20%28175%29.png)
 
 ```bash
  #pipe

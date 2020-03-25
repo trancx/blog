@@ -32,7 +32,7 @@ keke 😊，套用一下老规范作为标题，本章的是 Git 的三棵树延
 
 参考 `reset --hard` 的下面的解释，非常类似，
 
-![](.gitbook/assets/image%20%28111%29.png)
+![](.gitbook/assets/image%20%28112%29.png)
 
 这里不占出其它的 reset 操作了，链接中讲的非常明白，图也画的非常的好
 
@@ -54,7 +54,7 @@ merge  (merge index, wdir) dst_branch  => wdir
 
 ![](.gitbook/assets/image%20%2865%29.png)
 
-![](.gitbook/assets/image%20%28179%29.png)
+![](.gitbook/assets/image%20%28185%29.png)
 
 ```text
 git branch (--set-upstream-to=<upstream> | -u <upstream>) [<branchname>]
@@ -196,7 +196,7 @@ $ git fetch origin refs/heads/master:refs/remotes/origin/mymaster
 还是那三要素，远程地址，远程`refs`，本地`refs`
 {% endhint %}
 
-![](.gitbook/assets/image%20%28183%29.png)
+![](.gitbook/assets/image%20%28189%29.png)
 
 当你明白上面所说的，看这句话就会不同的理解，在 `git` 分支的概念完全是虚构出来的，实际的操作就是这些文件，当然了，这里还有 `objects` 的实际文件内容，但是这层我们可以屏蔽，所以无论什么默认操作，其实最终都是确定了这些玩意儿~~~
 

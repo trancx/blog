@@ -24,7 +24,7 @@ struct demo_struct {
 
 所以我们可以使用 sizeof 这样的 宏～ 下面这张图更生动解释了这一点，来源会在最后给出。
 
-![ ](../.gitbook/assets/image%20%28140%29.png)
+![ ](../.gitbook/assets/image%20%28144%29.png)
 
 而现在目前的大多数语言，都支持不声明具体类型，直接使用。
 
