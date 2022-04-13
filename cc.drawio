@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-04-13T12:01:19.931Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36" etag="u-Ifails7odXGXSy0Ynd" version="17.4.0" type="github" pages="4">
+<mxfile host="app.diagrams.net" modified="2022-04-13T13:03:12.812Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36" etag="YSh6u1_7nWbs5C0gT1ri" version="17.4.0" type="github" pages="4">
   <diagram id="C9Syprw9jZbZXscB6EK8" name="cc draw process">
     <mxGraphModel dx="834" dy="484" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -148,7 +148,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="Hz0JI-ykmIJ3puMJXyX-" name="Prepaint">
-    <mxGraphModel dx="1888" dy="579" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2071" dy="681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -425,7 +425,7 @@
         <mxCell id="awbYFz-Lt3avznh3fHgL-81" value="" style="endArrow=classic;html=1;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="967" y="1625" as="sourcePoint" />
-            <mxPoint x="1037" y="1585" as="targetPoint" />
+            <mxPoint x="850" y="1430" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="awbYFz-Lt3avznh3fHgL-82" value="" style="endArrow=classic;html=1;" edge="1" parent="1">
@@ -443,8 +443,8 @@
         <mxCell id="awbYFz-Lt3avznh3fHgL-84" value="LayoutObject" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
           <mxGeometry x="1059.8600000000001" y="1615" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="awbYFz-Lt3avznh3fHgL-85" value="PPTBContext" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
-          <mxGeometry x="1059.8600000000001" y="1580" width="40" height="20" as="geometry" />
+        <mxCell id="awbYFz-Lt3avznh3fHgL-85" value="full_context_" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
+          <mxGeometry x="910.0000000000001" y="1520" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="awbYFz-Lt3avznh3fHgL-86" value="&lt;span style=&quot;box-sizing: border-box; border-color: var(--border); color: inherit; font-family: monospace; text-align: start; background-color: rgb(255, 255, 255);&quot;&gt;&lt;font style=&quot;font-size: 13px;&quot;&gt;FragmentData&lt;/font&gt;&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
           <mxGeometry x="1070.0000000000002" y="1655" width="40" height="20" as="geometry" />
@@ -457,6 +457,9 @@
         </mxCell>
         <mxCell id="awbYFz-Lt3avznh3fHgL-88" value="&lt;div style=&quot;text-align: start;&quot;&gt;&lt;font face=&quot;monospace&quot;&gt;&lt;span style=&quot;font-size: 13px; background-color: rgb(255, 255, 255);&quot;&gt;ObjectPaint&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;text-align: start;&quot;&gt;&lt;font face=&quot;monospace&quot;&gt;&lt;span style=&quot;font-size: 13px; background-color: rgb(255, 255, 255);&quot;&gt;Properties&lt;/span&gt;&lt;/font&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;" vertex="1" parent="1">
           <mxGeometry x="1070.0000000000002" y="1690" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="awbYFz-Lt3avznh3fHgL-90" value="&lt;blockquote style=&quot;margin: 0 0 0 40px ; border: none ; padding: 0px&quot;&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;以 UpdateTransform 为例子，关键是 几点:&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;1. LayoutObject 是否值得创建一个 transform node&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;2. 这个&amp;nbsp; node 最关键的是根据 LayoutBox 的 origin,&amp;nbsp; width, height 设置 Matrix，&lt;b&gt;&lt;u&gt;关键是这个 x,y 是相对哪个&lt;/u&gt;&lt;/b&gt;？这是 Layout 时的 ContainBlock？&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;3. &lt;b&gt;&lt;u&gt;如何挂载在它应该在节点上？父节点如何确定？&lt;/u&gt;&lt;/b&gt;？？？&lt;/font&gt;&lt;/blockquote&gt;&lt;blockquote style=&quot;margin: 0 0 0 40px ; border: none ; padding: 0px&quot;&gt;&lt;font style=&quot;font-size: 15px&quot;&gt;4. CSS 本身还有 transform 属性需要增加到 matrix&lt;/font&gt;&lt;/blockquote&gt;" style="shape=callout;whiteSpace=wrap;html=1;perimeter=calloutPerimeter;align=left;" vertex="1" parent="1">
+          <mxGeometry x="630" y="2030" width="440" height="210" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
