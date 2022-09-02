@@ -1,125 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-09-02T08:31:04.623Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" etag="fDwEyZFN9M92DJSYVR_L" version="20.2.7" type="github" pages="5">
-  <diagram id="C9Syprw9jZbZXscB6EK8" name="cc draw process">
-    <mxGraphModel dx="1038" dy="579" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="40" y="50" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-2" value="&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="50" y="60" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-3" value="RenderSuface" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="60" y="110" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-4" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="180" y="130" as="sourcePoint" />
-            <mxPoint x="270" y="110" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-5" value="ClipRect = (20,100, 200, 100)&lt;br&gt;BlendMode: SrcOver&lt;br&gt;RoundedRect = 50%&lt;br&gt;ID: 0xab" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="280" y="70" width="200" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-6" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="40" y="320" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-7" value="&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="50" y="330" width="120" height="40" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-9" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="480" y="110" as="sourcePoint" />
-            <mxPoint x="580" y="110" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-10" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="170" y="400" as="sourcePoint" />
-            <mxPoint x="260" y="400" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-11" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="60" y="380" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-12" value="ClipRect，相对于目标画布的有效作图区域，只有在这个区域的纹理才能改变，对于 GL 来说就是一个 scissor&lt;br&gt;&lt;br&gt;Transform: 目标纹理最开始的位置是 0,0，经过这个矩阵转移到目标画布的最后的位置，并且包括了 scale&lt;br&gt;&lt;br&gt;ResourceID: 通过id拿到 gl 的纹理 id，直接操作纹理&lt;br&gt;&lt;br&gt;blendMode：混合模式" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="270" y="310" width="230" height="190" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-13" value="ClipRect = (0, 0, 0, 0)&lt;br&gt;BlendMode: SrcOver&lt;br&gt;ID: 0xab" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="580" y="80" width="200" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-14" value="明白了 ClipRect 的存在，你才知道，为什么可以做 Center-crop，只需要修改 tranform，因为 clipRect 没有变，纹理放大，在平移，最后被 clip，&lt;b&gt;看起来不就是这个效果吗？&lt;/b&gt;&lt;br&gt;&lt;br&gt;同样，你才明白，为什么 cc 做滚动只需要修改 scrolloffset，因为最后它就是作用在了这个 transform 之上，所以对于需要重新 raster 的，cc 是处理不来的，因为它只能改到这个 offset&lt;br&gt;&lt;br&gt;因为如此，所以 cc 关键就是判断这个 layer 可以不可以直接修改 tranform 呢？这个 layer 是否可以单独处理滚动的手势呢？这是非常重要一点。" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="540" y="310" width="330" height="190" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-15" value="RenderSurface 其实就是临时的绘制区域，只有它的存在，才能完成二次圆角，但是 RS 会有自己的空间，注意看这里的 cliprect 已经不存在了，因为最后不需要它来处理裁剪，RS 画的时候自然会被裁剪掉。" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="535" y="170" width="290" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-16" value="Target Surface" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="50" y="610" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-17" value="texture" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="550" y="540" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-18" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="250" y="720" as="sourcePoint" />
-            <mxPoint x="340" y="720" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-19" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="380" y="610" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-20" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
-          <mxGeometry x="410" y="680" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-22" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="590" y="720" as="sourcePoint" />
-            <mxPoint x="680" y="720" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-23" value="+" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="670" y="555" width="20" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-24" value="Transform" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="690" y="555" width="70" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-25" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="710" y="610" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-26" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
-          <mxGeometry x="740" y="680" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-27" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="725" y="640" width="155" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-28" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
-          <mxGeometry x="740" y="670" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-29" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="930" y="720" as="sourcePoint" />
-            <mxPoint x="1020" y="720" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-30" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="1050" y="610" width="180" height="210" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-31" value="" style="rounded=0;whiteSpace=wrap;html=1;sketch=0;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="1080" y="680" width="100" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-32" value="ClipRect" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-          <mxGeometry x="260" y="695" width="60" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="K8FTsf_NJZ-UPcorzu2G-33" value="如果 Texture 本身就可以画圆角&lt;br&gt;那么就是 FastBorderRadius" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=0;" parent="1" vertex="1">
-          <mxGeometry x="870" y="545" width="220" height="30" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
+<mxfile host="app.diagrams.net" modified="2022-09-02T08:59:03.982Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36" etag="1hmX2uQYlPKd3cqCxBqm" version="20.2.7" type="github" pages="5">
   <diagram id="xTEYYUH__arGFXA_8Ksp" name="Page-2">
-    <mxGraphModel dx="834" dy="484" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1038" dy="579" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -593,14 +474,26 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-8" value="" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;fillColor=none;dashed=1;dashPattern=1 1;" vertex="1" parent="1">
+          <mxGeometry x="450" y="620" width="370" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-7" value="" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;fillColor=none;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="120" y="540" width="710" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-11" value="" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;fillColor=none;dashed=1;fontStyle=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="10" y="510" width="830" height="370" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-10" value="" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;fillColor=none;dashed=1;dashPattern=1 1;" vertex="1" parent="1">
+          <mxGeometry x="340" y="125" width="500" height="265" as="geometry" />
+        </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-1" target="eUH-TFy-SoybNHo6OaMX-2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-1" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;ContainingFragment&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="650" y="655" width="150" height="30" as="geometry" />
+          <mxGeometry x="640" y="215" width="150" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-2" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;NGPhysicalBoxFragment&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="630" y="725" width="190" height="60" as="geometry" />
+          <mxGeometry x="620" y="285" width="190" height="60" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-4" target="eUH-TFy-SoybNHo6OaMX-1">
           <mxGeometry relative="1" as="geometry" />
@@ -608,37 +501,37 @@
         <mxCell id="eUH-TFy-SoybNHo6OaMX-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-4" target="eUH-TFy-SoybNHo6OaMX-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="725" y="605" />
+              <mxPoint x="715" y="165" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-4" target="eUH-TFy-SoybNHo6OaMX-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="800" y="605" />
+              <mxPoint x="790" y="165" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-4" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;&lt;span style=&quot;color: #267f99;&quot;&gt;PrePaintTreeWalkContextBase&lt;/span&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="575" width="220" height="60" as="geometry" />
+          <mxGeometry x="350" y="135" width="220" height="60" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-8" value="current" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="600" y="605" width="60" height="30" as="geometry" />
+          <mxGeometry x="590" y="165" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-9" value="abosolute" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="650" y="605" width="80" height="30" as="geometry" />
+          <mxGeometry x="640" y="165" width="80" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-11" value="fixed" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="750" y="605" width="50" height="30" as="geometry" />
+          <mxGeometry x="740" y="165" width="50" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-12" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;is_parent_first_for_node&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="350" y="635" width="210" height="30" as="geometry" />
+          <mxGeometry x="340" y="195" width="210" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-13" value="&lt;div style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; font-size: 14px; line-height: 19px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #000000;&quot;&gt;inside_blocking_wheel_event_handler&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="655" width="300" height="40" as="geometry" />
+          <mxGeometry x="350" y="215" width="300" height="40" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-14" value="&lt;div style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; font-size: 14px; line-height: 19px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #000000;&quot;&gt;inside_blocking_touch_event_handler&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="360" y="675" width="300" height="40" as="geometry" />
+          <mxGeometry x="350" y="235" width="300" height="40" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endArrow=blockThin;endFill=0;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-15" target="eUH-TFy-SoybNHo6OaMX-4">
           <mxGeometry relative="1" as="geometry" />
@@ -647,16 +540,16 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-15" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;&lt;span style=&quot;color: #267f99;&quot;&gt;PrePaintTreeWalkContext&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;background-color: rgb(255, 255, 255); line-height: 19px;&quot;&gt;&lt;font face=&quot;Consolas, Courier New, monospace&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;pre_paint_tree_walk.h&lt;/u&gt;&lt;/span&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="460" width="200" height="60" as="geometry" />
+          <mxGeometry x="70" y="20" width="200" height="60" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-18" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;PaintPropertyTreeBuilderContext&lt;/div&gt;&lt;div style=&quot;background-color: rgb(255, 255, 255); line-height: 19px;&quot;&gt;&lt;font face=&quot;Consolas, Courier New, monospace&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;paint_property_tree_builder.h&lt;/u&gt;&lt;/span&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="50" y="575" width="260" height="65" as="geometry" />
+          <mxGeometry x="40" y="135" width="260" height="65" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-20" value="&lt;b&gt;&lt;font color=&quot;#ea6b66&quot;&gt;inherits&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="320" y="490" width="70" height="30" as="geometry" />
+          <mxGeometry x="310" y="50" width="70" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-21" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;tree_builder_context&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="90" y="535" width="180" height="30" as="geometry" />
+          <mxGeometry x="80" y="95" width="180" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#000000;endArrow=classic;endFill=1;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-22" target="eUH-TFy-SoybNHo6OaMX-23">
           <mxGeometry relative="1" as="geometry" />
@@ -667,53 +560,134 @@
         <mxCell id="eUH-TFy-SoybNHo6OaMX-34" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;fontColor=#000000;endArrow=classic;endFill=1;" edge="1" parent="1" source="eUH-TFy-SoybNHo6OaMX-22" target="eUH-TFy-SoybNHo6OaMX-23">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eUH-TFy-SoybNHo6OaMX-22" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;PaintPropertyTreeBuilderContext&lt;/div&gt;&lt;div style=&quot;background-color: rgb(255, 255, 255); line-height: 19px;&quot;&gt;&lt;font face=&quot;Consolas, Courier New, monospace&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;u&gt;paint_property_tree_builder.h&lt;/u&gt;&lt;/span&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="30" y="20" width="260" height="65" as="geometry" />
+        <mxCell id="eUH-TFy-SoybNHo6OaMX-22" value="&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;PaintPropertyTreeBuilder&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;&lt;span style=&quot;color: rgb(38, 127, 153);&quot;&gt;&lt;b&gt;Fragment&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;Context&lt;/div&gt;&lt;div style=&quot;line-height: 19px;&quot;&gt;&lt;font style=&quot;&quot; face=&quot;Consolas, Courier New, monospace&quot;&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;&lt;u style=&quot;&quot;&gt;paint_property_tree_builder.h&lt;/u&gt;&lt;/span&gt;&lt;/font&gt;&lt;br&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="560" width="260" height="105" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-23" value="&lt;div style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;ContainingBlockContext&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontColor=#EA6B66;" vertex="1" parent="1">
-          <mxGeometry x="335" y="120" width="200" height="60" as="geometry" />
+          <mxGeometry x="459" y="700" width="200" height="60" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-25" value="&lt;font color=&quot;#000000&quot;&gt;paint offset&lt;/font&gt;" style="whiteSpace=wrap;html=1;fontColor=#EA6B66;" vertex="1" parent="1">
-          <mxGeometry x="610" y="125" width="80" height="20" as="geometry" />
+          <mxGeometry x="730" y="705" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-27" value="&lt;font color=&quot;#000000&quot;&gt;transform&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="610" y="155" width="80" height="20" as="geometry" />
+          <mxGeometry x="730" y="735" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-28" value="&lt;font color=&quot;#000000&quot;&gt;clip&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="610" y="185" width="80" height="20" as="geometry" />
+          <mxGeometry x="730" y="765" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-29" value="&lt;font color=&quot;#000000&quot;&gt;scroll&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="610" y="215" width="80" height="20" as="geometry" />
+          <mxGeometry x="730" y="795" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-30" value="LayoutObject&lt;br&gt;(paint_layer&lt;br&gt;offset origin)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
-          <mxGeometry x="610" y="65" width="80" height="50" as="geometry" />
+          <mxGeometry x="730" y="645" width="80" height="50" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-35" value="current" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="330" y="55" width="60" height="30" as="geometry" />
+          <mxGeometry x="450" y="635" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-36" value="abosolute" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="420" y="55" width="80" height="30" as="geometry" />
+          <mxGeometry x="547" y="635" width="80" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-37" value="fixed" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="390" y="55" width="50" height="30" as="geometry" />
+          <mxGeometry x="510" y="635" width="50" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-38" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fontColor=#000000;fillColor=#d5e8d4;strokeColor=#82b366;" edge="1" parent="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="550" y="150" as="sourcePoint" />
-            <mxPoint x="590" y="150" as="targetPoint" />
+            <mxPoint x="670" y="730" as="sourcePoint" />
+            <mxPoint x="710" y="730" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-39" value="&lt;font color=&quot;#000000&quot;&gt;effect&lt;/font&gt;" style="whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
-          <mxGeometry x="55" y="115" width="80" height="20" as="geometry" />
+          <mxGeometry x="175" y="695" width="80" height="20" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-40" value="effect 作用所有后代" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="30" y="135" width="130" height="30" as="geometry" />
+          <mxGeometry x="150" y="715" width="130" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-41" value="&lt;div style=&quot;color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; font-size: 14px; line-height: 19px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(0, 0, 0); line-height: 0.46;&quot;&gt;translation_2d_to_layout_shift_root_delta&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="10" y="155" width="320" height="30" as="geometry" />
+          <mxGeometry x="130" y="735" width="320" height="30" as="geometry" />
         </mxCell>
         <mxCell id="eUH-TFy-SoybNHo6OaMX-42" value="对于不同后代，选择不同的 parent context" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="320" y="20" width="250" height="30" as="geometry" />
+          <mxGeometry x="420" y="580" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#000000;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="25dexhyTXxaYU2eJ0BYG-1" target="eUH-TFy-SoybNHo6OaMX-22">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-1" value="&lt;div style=&quot;background-color: rgb(255, 255, 255); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-size: 14px; line-height: 19px;&quot;&gt;PaintPropertyTreeBuilderContext&lt;/div&gt;" style="whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="155" y="410" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-3" value="&lt;div style=&quot;color: rgb(0, 0, 0); font-family: Consolas, &amp;quot;Courier New&amp;quot;, monospace; font-weight: normal; font-size: 14px; line-height: 19px;&quot;&gt;&lt;div style=&quot;&quot;&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;HeapVector&amp;lt;..., &lt;/span&gt;&lt;span style=&quot;color: rgb(9, 134, 88);&quot;&gt;1&lt;/span&gt;&lt;span style=&quot;color: rgb(0, 0, 0);&quot;&gt;&amp;gt; fragments;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;" style="text;whiteSpace=wrap;html=1;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="300" y="470" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-4" value="一般只有一个" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="520" y="470" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-5" value="LayoutObject&lt;br&gt;(container&lt;br&gt;fixed)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="540" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-6" value="LayoutObject&lt;br&gt;(container&lt;br&gt;abosulute)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="20" y="605" width="80" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-9" value="" style="rounded=0;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontColor=#000000;fillColor=none;dashed=1;dashPattern=1 1;" vertex="1" parent="1">
+          <mxGeometry x="590" y="150" width="240" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-13" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Frament Level&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="610" y="540" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-14" value="&lt;b&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;Layout Object Level&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="400" y="510" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-15" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;fontSize=16;fontColor=#000000;endWidth=64;endSize=8;startArrow=none;" edge="1" parent="1" source="25dexhyTXxaYU2eJ0BYG-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="170" y="210" as="sourcePoint" />
+            <mxPoint x="200" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-16" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;遍历 LayoutObject 创建/更新&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="255" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-17" value="" style="shape=flexArrow;endArrow=none;html=1;rounded=0;fontSize=16;fontColor=#000000;endWidth=64;endSize=8;" edge="1" parent="1" target="25dexhyTXxaYU2eJ0BYG-16">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="170" y="210" as="sourcePoint" />
+            <mxPoint x="200" y="410" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=16;fontColor=#000000;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="25dexhyTXxaYU2eJ0BYG-18" target="25dexhyTXxaYU2eJ0BYG-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-18" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;LayoutObject&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=18;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="145" y="960" width="110" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-20" value="&lt;b&gt;整体的信息&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="380" y="265" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=16;fontColor=#000000;endArrow=classic;endFill=1;strokeWidth=2;" edge="1" parent="1" source="25dexhyTXxaYU2eJ0BYG-21" target="25dexhyTXxaYU2eJ0BYG-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-21" value="Fragment" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="280" y="967.5" width="85" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-23" value="Property&lt;br&gt;Tree&lt;br&gt;State" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="387.5" y="957.5" width="85" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.462;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=16;fontColor=#000000;endArrow=classic;endFill=1;strokeWidth=1;" edge="1" parent="1" source="25dexhyTXxaYU2eJ0BYG-26" target="eUH-TFy-SoybNHo6OaMX-40">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-26" value="E" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="500" y="960" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-30" value="S" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="548" y="990.5" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-31" value="C" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="522" y="990.5" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-32" value="T" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;labelBackgroundColor=none;fontSize=16;fontColor=#000000;strokeWidth=1;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="576" y="990.5" width="22" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-37" value="&lt;font style=&quot;font-size: 15px;&quot;&gt;&lt;b&gt;It denpends on CSS&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;fontColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="495" y="1010" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="25dexhyTXxaYU2eJ0BYG-38" value="PaintLayer" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="20" y="670" width="80" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -894,6 +868,125 @@
         </mxCell>
         <mxCell id="2gaAMEyKyqW_-O3s5O7H-54" value="&lt;div&gt;&amp;nbsp; &amp;nbsp;The following two values are added besides the normal&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;&lt;u&gt;&lt;b&gt;kBlockBackground&lt;/b&gt;&lt;/u&gt; to distinguish backgrounds for the object itself&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;and for descendants, because the two backgrounds are often painted with&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;different scroll offsets and clips.&lt;/div&gt;&lt;div&gt;&amp;nbsp;&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;&lt;span style=&quot;white-space: pre&quot;&gt; &lt;/span&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;Paint background of the current object only.&lt;/div&gt;&lt;div&gt;&amp;nbsp; &lt;b&gt;&lt;u&gt;kSelfBlockBackgroundOnly&lt;/u&gt;&lt;/b&gt;,&lt;/div&gt;&lt;blockquote style=&quot;margin: 0 0 0 40px ; border: none ; padding: 0px&quot;&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;Paint backgrounds of non-self-painting descendants only.&amp;nbsp;&lt;/div&gt;&lt;div&gt;&amp;nbsp; &amp;nbsp;The painter should&amp;nbsp;&lt;span&gt;call each non-self-painting child&#39;s paint&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&amp;nbsp; &amp;nbsp;method by passing&amp;nbsp;&lt;/span&gt;&lt;span&gt;PaintInfo::ForDescendants() which con-&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&amp;nbsp; &amp;nbsp;verts kDescendantBlockBackgroundsOnly&amp;nbsp;&lt;/span&gt;&lt;span&gt;to kBlockBackground.&lt;/span&gt;&lt;/div&gt;&lt;/blockquote&gt;&lt;div&gt;&amp;nbsp; &lt;u&gt;&lt;b&gt;kDescendantBlockBackgroundsOnly&lt;/b&gt;&lt;/u&gt;,&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=15;fontFamily=Helvetica;fontColor=default;" parent="1" vertex="1">
           <mxGeometry x="-540" y="365" width="520" height="220" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="C9Syprw9jZbZXscB6EK8" name="cc draw process">
+    <mxGraphModel dx="1038" dy="579" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="50" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-2" value="&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="50" y="60" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-3" value="RenderSuface" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="110" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-4" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="130" as="sourcePoint" />
+            <mxPoint x="270" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-5" value="ClipRect = (20,100, 200, 100)&lt;br&gt;BlendMode: SrcOver&lt;br&gt;RoundedRect = 50%&lt;br&gt;ID: 0xab" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="280" y="70" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-6" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="320" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-7" value="&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="50" y="330" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-9" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="480" y="110" as="sourcePoint" />
+            <mxPoint x="580" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-10" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="170" y="400" as="sourcePoint" />
+            <mxPoint x="260" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-11" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="60" y="380" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-12" value="ClipRect，相对于目标画布的有效作图区域，只有在这个区域的纹理才能改变，对于 GL 来说就是一个 scissor&lt;br&gt;&lt;br&gt;Transform: 目标纹理最开始的位置是 0,0，经过这个矩阵转移到目标画布的最后的位置，并且包括了 scale&lt;br&gt;&lt;br&gt;ResourceID: 通过id拿到 gl 的纹理 id，直接操作纹理&lt;br&gt;&lt;br&gt;blendMode：混合模式" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="270" y="310" width="230" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-13" value="ClipRect = (0, 0, 0, 0)&lt;br&gt;BlendMode: SrcOver&lt;br&gt;ID: 0xab" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="580" y="80" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-14" value="明白了 ClipRect 的存在，你才知道，为什么可以做 Center-crop，只需要修改 tranform，因为 clipRect 没有变，纹理放大，在平移，最后被 clip，&lt;b&gt;看起来不就是这个效果吗？&lt;/b&gt;&lt;br&gt;&lt;br&gt;同样，你才明白，为什么 cc 做滚动只需要修改 scrolloffset，因为最后它就是作用在了这个 transform 之上，所以对于需要重新 raster 的，cc 是处理不来的，因为它只能改到这个 offset&lt;br&gt;&lt;br&gt;因为如此，所以 cc 关键就是判断这个 layer 可以不可以直接修改 tranform 呢？这个 layer 是否可以单独处理滚动的手势呢？这是非常重要一点。" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="540" y="310" width="330" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-15" value="RenderSurface 其实就是临时的绘制区域，只有它的存在，才能完成二次圆角，但是 RS 会有自己的空间，注意看这里的 cliprect 已经不存在了，因为最后不需要它来处理裁剪，RS 画的时候自然会被裁剪掉。" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+          <mxGeometry x="535" y="170" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-16" value="Target Surface" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="50" y="610" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-17" value="texture" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="550" y="540" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-18" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="250" y="720" as="sourcePoint" />
+            <mxPoint x="340" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-19" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="380" y="610" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-20" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="410" y="680" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-22" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="590" y="720" as="sourcePoint" />
+            <mxPoint x="680" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-23" value="+" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="670" y="555" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-24" value="Transform" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="690" y="555" width="70" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-25" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="710" y="610" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-26" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="740" y="680" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-27" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="725" y="640" width="155" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-28" value="ClipRect" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="740" y="670" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-29" value="" style="endArrow=classic;html=1;rounded=0;strokeWidth=3;" parent="1" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="930" y="720" as="sourcePoint" />
+            <mxPoint x="1020" y="720" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-30" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+          <mxGeometry x="1050" y="610" width="180" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-31" value="" style="rounded=0;whiteSpace=wrap;html=1;sketch=0;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
+          <mxGeometry x="1080" y="680" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-32" value="ClipRect" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="260" y="695" width="60" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="K8FTsf_NJZ-UPcorzu2G-33" value="如果 Texture 本身就可以画圆角&lt;br&gt;那么就是 FastBorderRadius" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=0;" parent="1" vertex="1">
+          <mxGeometry x="870" y="545" width="220" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
